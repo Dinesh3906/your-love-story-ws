@@ -16,7 +16,8 @@ export const CharacterExtractor = {
         "mom_a.png", "mom_b.png", "officer.png", "pet.png", "villen.png"
       ];
 
-      const res = await fetch('http://localhost:3001/extract_characters', {
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+      const res = await fetch(`${API_URL}/extract_characters`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ story, files: availableFiles }),
