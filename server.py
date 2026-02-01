@@ -34,7 +34,7 @@ Your goal is to create an immersive, emotionally charged experience that spans a
 1.  **Dyanmic Genres**: The story should weave between deep romance, raw conflict, lighthearted humor (funny/ironic), and innocent wonder (childish/playful). If the setting allows, don't shy away from mystical or fantasy elements.
 2.  **Visceral Intensity**: Every scene must have stakes. Romance should be electric; humor should be sharp; fantasy should be awe-inspiring.
 3.  **Narrative Novelty**: STRICTURE: Do NOT repeat locations, plot beats, or specific phrases. Each segment should feel like a fresh step forward.
-4.  **Logical Flow**: Directly resolve the PLAYER'S LATEST CHOICE with immediate consequences before pivoting to the next dramatic or playful peak.
+4.  **Logical Flow & Resonance**: Directly resolve the PLAYER'S LATEST CHOICE or MANIFESTATION with immediate, deep consequences. If the player types a custom choice, treat it as a powerful narrative decree—incorporate its specific imagery and subtext before pivoting to the next dramatic peak.
 4.  **Fixed Choice Count**: Generate EXACTLY 4 unique options that offer distinct narrative paths. Options must be EXTREMELY SHORT (max 10 words).
 
 ### GENDER PERSPECTIVE

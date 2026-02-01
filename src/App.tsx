@@ -35,7 +35,7 @@ function App() {
           repeat: Infinity,
           ease: "easeInOut"
         }}
-        className="absolute inset-0 z-0 opacity-40 pointer-events-none"
+        className="absolute inset-0 z-0 opacity-50 pointer-events-none"
       >
         <div
           className="w-full h-full bg-no-repeat bg-cover bg-left lg:bg-center"
