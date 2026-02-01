@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Choice } from '../lib/engines/BranchEngine';
 
@@ -7,34 +8,74 @@ interface Props {
 }
 
 export default function ChoiceButtons({ choices, onChoiceSelect }: Props) {
+    const [customChoice, setCustomChoice] = useState('');
+
+    const handleCustomSubmit = (e?: React.FormEvent) => {
+        if (e) e.preventDefault();
+        if (!customChoice.trim()) return;
+
+        onChoiceSelect({
+            id: `custom_${Date.now()}`,
+            text: customChoice.trim(),
+            effects: { relationship: 1, trust: 1 },
+            intent: "custom"
+        } as any);
+        setCustomChoice('');
+    };
+
     return (
-        <div className="w-full flex flex-col gap-3 sm:gap-5">
-            {choices.map((choice, index) => (
+        <div className="w-full flex flex-col gap-1.5 sm:gap-3 py-1">
+            {choices.slice(0, 4).map((choice, index) => (
                 <motion.button
                     key={index}
-                    initial={{ opacity: 0, x: 60, rotateY: 15 }}
-                    animate={{ opacity: 1, x: 0, rotateY: 0 }}
-                    transition={{ delay: index * 0.2, duration: 1, type: 'spring' }}
-                    whileHover={{ scale: 1.04, x: 20, translateZ: 50, boxShadow: '0 0 50px rgba(255, 183, 197, 0.25)' }}
-                    whileTap={{ scale: 0.96 }}
+                    initial={{ opacity: 0, x: 30 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: index * 0.08, duration: 0.6 }}
+                    whileHover={{ scale: 1.01, x: 5, backgroundColor: 'rgba(255, 183, 197, 0.15)' }}
+                    whileTap={{ scale: 0.99 }}
                     onClick={() => onChoiceSelect(choice)}
-                    className="group relative w-full text-center sm:text-left glass-morphism p-3 sm:p-6 lg:p-8 rounded-[24px] sm:rounded-[32px] neon-border overflow-hidden transition-all duration-700"
+                    className="group relative w-full text-left glass-morphism p-2.5 sm:p-4 lg:p-5 rounded-[16px] sm:rounded-[24px] border border-white/10 overflow-hidden transition-all duration-300 bg-cherry-blossom/5"
                 >
-                    <div className="absolute inset-0 bg-gradient-to-r from-cherry-blossom/0 via-cherry-blossom/10 to-cherry-blossom/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1500 ease-in-out" />
+                    <div className="absolute inset-0 bg-gradient-to-r from-cherry-blossom/0 via-cherry-blossom/10 to-cherry-blossom/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
 
-                    <div className="flex items-center justify-center sm:justify-start gap-4 sm:gap-10 relative z-10">
-                        <span className="hidden sm:block text-cherry-blossom font-serif text-xl sm:text-3xl group-hover:scale-125 group-hover:rotate-45 transition-all duration-700">✧</span>
-                        <span className="flex-1 text-white/95 text-base sm:text-lg lg:text-2xl font-serif tracking-wide leading-relaxed font-light italic text-center sm:text-left">
+                    <div className="flex items-center gap-3 sm:gap-6 relative z-10">
+                        <span className="text-cherry-blossom font-serif text-base sm:text-xl opacity-80 group-hover:opacity-100 group-hover:rotate-12 transition-all duration-300">✧</span>
+                        <span className="flex-1 text-white/95 text-xs sm:text-sm lg:text-lg font-serif tracking-wide italic">
                             {choice.text}
                         </span>
-                        <motion.div
-                            className="hidden sm:block w-16 h-[1px] bg-white/10 group-hover:bg-cherry-blossom group-hover:w-24 transition-all duration-1000"
-                            initial={{ width: 0 }}
-                            animate={{ width: 64 }}
-                        />
                     </div>
                 </motion.button>
             ))}
+
+            {/* Custom Choice Input */}
+            <motion.form
+                initial={{ opacity: 0, y: 5 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4 }}
+                onSubmit={handleCustomSubmit}
+                className="mt-1 sm:mt-2 relative group"
+            >
+                <div className="relative flex items-center glass-morphism rounded-[16px] sm:rounded-[24px] border border-cherry-blossom/20 overflow-hidden bg-cherry-blossom/5">
+                    <input
+                        type="text"
+                        value={customChoice}
+                        onChange={(e) => setCustomChoice(e.target.value)}
+                        placeholder="Manifest your own path..."
+                        className="flex-1 bg-transparent px-4 py-2.5 sm:px-8 sm:py-4 lg:py-5 text-white placeholder:text-cherry-blossom/30 focus:outline-none text-xs sm:text-sm lg:text-base font-serif italic"
+                    />
+                    <button
+                        type="submit"
+                        disabled={!customChoice.trim()}
+                        className={`px-4 sm:px-8 h-full py-2.5 sm:py-4 lg:py-5 transition-all duration-300 flex items-center gap-2 border-l border-cherry-blossom/20 ${customChoice.trim()
+                                ? 'bg-cherry-blossom/20 text-cherry-blossom hover:bg-cherry-blossom/30'
+                                : 'opacity-10 grayscale'
+                            }`}
+                    >
+                        <span className="text-[8px] sm:text-[10px] font-black uppercase tracking-[0.2em] hidden sm:block">Manifest</span>
+                        <span className="text-base sm:text-lg">✦</span>
+                    </button>
+                </div>
+            </motion.form>
         </div>
     );
 }

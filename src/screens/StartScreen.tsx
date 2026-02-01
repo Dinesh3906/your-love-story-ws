@@ -92,28 +92,6 @@ export default function StartScreen({ onStart }: { onStart: () => void }) {
 
   return (
     <div className='h-full w-full flex flex-col lg:flex-row relative z-20 overflow-hidden depth-container'>
-      {/* Background Layer: Wind-Driven Cinematic Tree Motion */}
-      <motion.div
-        animate={{
-          scale: [1.1, 1.25, 1.15, 1.3, 1.2, 1.1],
-          x: [0, -40, 30, -50, 20, 0],
-          y: [0, 20, -15, 25, -10, 0],
-          rotate: [0, 1.2, -0.8, 1.5, -0.5, 0],
-        }}
-        transition={{
-          duration: 35, // Slightly faster than before to feel like gusts
-          repeat: Infinity,
-          ease: "easeInOut"
-        }}
-        className="absolute inset-0 z-0 opacity-50 pointer-events-none"
-      >
-        <div
-          className="w-full h-full bg-no-repeat bg-cover bg-left lg:bg-center"
-          style={{ backgroundImage: 'url("/cherry_tree.png")' }}
-        />
-        <div className="absolute inset-0 bg-gradient-to-r from-midnight via-midnight/60 to-midnight"></div>
-      </motion.div>
-
       <CherryPetalSystem />
 
       {/* LEFT SIDE: Emotional atmosphere zone (60%) */}

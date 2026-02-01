@@ -151,7 +151,7 @@ export default function GameScreen({ onGameOver }: { onGameOver: () => void }) {
 
   if (isLoading || !currentScene) {
     return (
-      <div className='h-full w-full bg-black flex items-center justify-center p-4 sm:p-12'>
+      <div className='h-full w-full bg-transparent flex items-center justify-center p-4 sm:p-12'>
         <motion.div
           animate={{ opacity: [0.4, 0.9, 0.4], scale: [0.98, 1, 0.98] }}
           transition={{ repeat: Infinity, duration: 2 }}
@@ -165,29 +165,7 @@ export default function GameScreen({ onGameOver }: { onGameOver: () => void }) {
   }
 
   return (
-    <div className='h-full w-full bg-black flex flex-col relative overflow-hidden depth-container'>
-      {/* Background Decor: Wind-Driven Cinematic Tree Motion */}
-      <motion.div
-        animate={{
-          scale: [1.15, 1.35, 1.25, 1.4, 1.3, 1.15],
-          x: [0, 50, -30, 60, -20, 0],
-          y: [0, -25, 15, -30, 10, 0],
-          rotate: [0, -1.5, 1.0, -1.8, 0.5, 0],
-        }}
-        transition={{
-          duration: 40,
-          repeat: Infinity,
-          ease: "easeInOut"
-        }}
-        className="absolute inset-0 z-0 opacity-40 pointer-events-none"
-      >
-        <div
-          className="w-full h-full bg-no-repeat bg-cover bg-center lg:bg-left"
-          style={{ backgroundImage: 'url("/cherry_tree.png")' }}
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-midnight/80 via-midnight/20 to-midnight"></div>
-      </motion.div>
-
+    <div className='h-full w-full bg-transparent flex flex-col relative overflow-hidden depth-container'>
       <CherryPetalSystem />
 
       {/* Cinematic HUD (Top) */}
