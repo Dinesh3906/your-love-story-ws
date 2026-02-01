@@ -36,13 +36,19 @@ export const BranchEngine = {
           const lowerIntent = (intent || "").toLowerCase();
           const lowerText = text.toLowerCase();
 
-          if (lowerIntent.includes("romance") || lowerText.includes("love") || lowerText.includes("warm")) {
+          if (lowerIntent.includes("romance") || lowerText.includes("love") || lowerText.includes("warm") || lowerIntent.includes("passion")) {
             effects.relationship = 5;
-          } else if (lowerIntent.includes("confront") || lowerText.includes("harsh") || lowerText.includes("cold")) {
+          } else if (lowerIntent.includes("confront") || lowerText.includes("harsh") || lowerText.includes("cold") || lowerIntent.includes("conflict")) {
             effects.relationship = -3;
             effects.trust = -2;
-          } else if (lowerIntent.includes("honest") || lowerText.includes("truth")) {
+          } else if (lowerIntent.includes("honest") || lowerText.includes("truth") || lowerIntent.includes("vulnerability")) {
             effects.trust = 5;
+            effects.relationship = 2;
+          } else if (lowerIntent.includes("humor") || lowerIntent.includes("funny")) {
+            effects.relationship = 3;
+            effects.trust = 1;
+          } else if (lowerIntent.includes("fantasy") || lowerIntent.includes("mystery")) {
+            effects.trust = 2;
           } else {
             effects.relationship = 1;
           }

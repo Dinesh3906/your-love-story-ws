@@ -6,7 +6,8 @@ import time
 url = "http://localhost:3001/generate"
 
 payload = {
-    "summary_of_previous": "A young mage enters a hidden library for the first time."
+    "summary_of_previous": "A clumsy goblin accidentally drinks a potion that makes him talk like a refined Victorian gentleman. He is currently in a dragon's lair.",
+    "user_gender": "male"
 }
 
 print("Sending request to /generate...")
