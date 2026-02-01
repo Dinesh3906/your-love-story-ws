@@ -4,18 +4,21 @@
     "description": "A cinematic romantic adventure written by your choices.",
     "start_url": "/",
     "display": "standalone",
-    "background_color": "#020617",
+    "background_color": "#0a0a0f",
     "theme_color": "#ffb7c5",
+    "orientation": "portrait",
     "icons": [
         {
-            "src": "cherry_petal.png",
+            "src": "pwa-icon.png",
             "sizes": "192x192",
-            "type": "image/png"
+            "type": "image/png",
+            "purpose": "any"
         },
         {
-            "src": "cherry_petal.png",
+            "src": "pwa-icon.png",
             "sizes": "512x512",
-            "type": "image/png"
+            "type": "image/png",
+            "purpose": "maskable"
         }
     ]
 }
