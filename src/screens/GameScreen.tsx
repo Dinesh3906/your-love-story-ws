@@ -122,13 +122,25 @@ export default function GameScreen({ onGameOver }: { onGameOver: () => void }) {
     }
   };
 
+  const [lastChoice, setLastChoice] = useState<Choice | null>(null);
+
   const handleChoiceSelect = async (choice: Choice) => {
-    if (choice.id === 'retry') {
-      setShowChoices(false);
-      handleDialogueComplete();
-      return;
+    if (choice.id === 'narrative_retry') {
+      if (lastChoice) {
+        handleChoiceSelect(lastChoice);
+        return;
+      } else {
+        // If we fail on the first scene, just re-initialize
+        setShowChoices(false);
+        setIsLoading(true);
+        const generatedScenes = await SceneBuilder.buildScenes(userPrompt, []);
+        setScenes(generatedScenes);
+        setIsLoading(false);
+        return;
+      }
     }
 
+    setLastChoice(choice);
     updateStats(choice.effects);
     addToHistory(`Choice: ${choice.text}`);
     setIsLoading(true);
@@ -136,9 +148,16 @@ export default function GameScreen({ onGameOver }: { onGameOver: () => void }) {
 
     try {
       const nextScenes = await SceneBuilder.buildScenes(userPrompt, history, choice);
-      setScenes(nextScenes);
-      setSceneIndex(0);
+
+      // APPEND scenes instead of replacing to allow "Previous" navigation
+      const updatedScenes = [...scenes, ...nextScenes];
+      setScenes(updatedScenes);
+
+      // Start at the first NEW scene
+      const newIndex = scenes.length;
+      setSceneIndex(newIndex);
       setCurrentScene(nextScenes[0].id);
+
       const fullStory = nextScenes.map(s => `${s.speaker}: ${s.dialogue}`).join("\n");
       addToHistory(`Story: ${fullStory}`);
     } catch (error) {
@@ -146,6 +165,19 @@ export default function GameScreen({ onGameOver }: { onGameOver: () => void }) {
       onGameOver();
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handlePrevious = () => {
+    if (showChoices) {
+      setShowChoices(false);
+      return;
+    }
+
+    if (sceneIndex > 0) {
+      const prevIndex = sceneIndex - 1;
+      setSceneIndex(prevIndex);
+      setCurrentScene(scenes[prevIndex].id);
     }
   };
 
@@ -280,6 +312,21 @@ export default function GameScreen({ onGameOver }: { onGameOver: () => void }) {
             </motion.div>
           )}
         </div>
+
+        {/* Previous Scene Button */}
+        {(sceneIndex > 0 || showChoices) && (
+          <motion.button
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 0.5 }}
+            whileHover={{ opacity: 1, scale: 1.1 }}
+            onClick={handlePrevious}
+            className="fixed bottom-8 left-8 z-50 p-4 rounded-full bg-white/5 border border-white/10 backdrop-blur-md text-white/60 hover:text-white transition-all group"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 group-hover:-translate-x-1 transition-transform">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
+            </svg>
+          </motion.button>
+        )}
       </div>
     </div>
   );

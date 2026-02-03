@@ -18,8 +18,6 @@ export interface PromptRequest {
 
 // --- Pollinations AI (No Key) ---
 export async function generateWithPollinations(prompt: string, systemPrompt: string): Promise<any> {
-    const fullPrompt = `${systemPrompt}\n\nUSER INPUT:\n${prompt}\n\nIMPORTANT: Return ONLY valid JSON.`;
-
     const response = await fetch(`https://text.pollinations.ai/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -28,8 +26,9 @@ export async function generateWithPollinations(prompt: string, systemPrompt: str
                 { role: 'system', content: systemPrompt },
                 { role: 'user', content: prompt }
             ],
-            model: 'openai', // Pollinations maps this to best available free model
-            jsonMode: true
+            model: 'openai',
+            jsonMode: true,
+            max_tokens: 1500
         })
     });
 
@@ -51,8 +50,10 @@ export async function generateWithGroq(apiKey: string, prompt: string, systemPro
                 { role: "system", content: systemPrompt },
                 { role: "user", content: prompt }
             ],
-            model: "llama-3.1-8b-instant",
-            response_format: { type: "json_object" }
+            model: "llama-3.1-70b-versatile", // Switched to 70b for better JSON logic
+            response_format: { type: "json_object" },
+            max_tokens: 1024,
+            temperature: 0.7
         })
     });
 
@@ -63,7 +64,6 @@ export async function generateWithGroq(apiKey: string, prompt: string, systemPro
 
 // --- Gemini (Free Tier) ---
 export async function generateWithGemini(apiKey: string, prompt: string, systemPrompt: string): Promise<any> {
-    // Gemini REST API URL
     const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
 
     const response = await fetch(url, {
@@ -71,10 +71,12 @@ export async function generateWithGemini(apiKey: string, prompt: string, systemP
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
             contents: [{
-                parts: [{ text: `${systemPrompt}\n\n${prompt}` }]
+                parts: [{ text: `${systemPrompt}\n\n${prompt}\n\nIMPORTANT: Return EXACTLY 4 options in the JSON schema.` }]
             }],
             generationConfig: {
-                responseMimeType: "application/json"
+                responseMimeType: "application/json",
+                maxOutputTokens: 2048,
+                temperature: 0.8
             }
         })
     });

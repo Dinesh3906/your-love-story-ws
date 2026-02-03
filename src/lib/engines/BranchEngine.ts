@@ -25,11 +25,13 @@ export const BranchEngine = {
 
     try {
       const data = JSON.parse(rawNarrative);
-      if (data.options && Array.isArray(data.options)) {
-        return data.options.map((opt: any, index: number) => {
-          // LLM now returns objects per SYSTEM_PROMPT in server.py
-          const text = typeof opt === 'string' ? opt : (opt.text || "Continue...");
-          const intent = typeof opt === 'object' ? opt.intent : "";
+      const options = data.options || data.choices || data.suggestions || [];
+
+      if (Array.isArray(options) && options.length > 0) {
+        return options.map((opt: any, index: number) => {
+          // Be extra defensive with AI hallucinations
+          const text = typeof opt === 'string' ? opt : (opt.text || opt.choice || opt.dialogue || "Continue...");
+          const intent = typeof opt === 'object' ? (opt.intent || opt.mood || "") : "";
 
           // Determine effects based on intent or text content
           const effects: Effects = {};
@@ -68,8 +70,8 @@ export const BranchEngine = {
     // Dynamic fallback instead of prewritten ones
     return [
       {
-        id: 'retry',
-        text: "The path is unclear. Search for another way...",
+        id: 'narrative_retry',
+        text: "The path is hazy... Click to try perceiving this moment again.",
         effects: {}
       }
     ];

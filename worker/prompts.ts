@@ -25,6 +25,7 @@ The player is [GENDER]. Write deep into their psyche.
 - **Length**: Keep narrative segments rich but under 200 words.
 
 ### OUTPUT FORMAT (STRICT JSON ONLY)
+You MUST return a valid JSON object. No conversational filler before or after the JSON.
 {
   "story": "Dramatic resolution + new scene. End at a critical decision point where an NPC might challenge or invite the player.",
   "mood": "Cinematic label (e.g., 'Simmering Tension', 'Unexpected Invitation', 'Cold Betrayal').",
@@ -35,11 +36,19 @@ The player is [GENDER]. Write deep into their psyche.
   "options": [
     {
       "id": "A",
-      "text": "Short, punchy action/dialogue.",
+      "text": "Short, punchy action/dialogue (Max 10 words).",
       "intent": "romance | conflict | humor | mystery | daring"
-    }
+    },
+    { "id": "B", "text": "...", "intent": "..." },
+    { "id": "C", "text": "...", "intent": "..." },
+    { "id": "D", "text": "...", "intent": "..." }
   ]
-}`;
+}
+
+### STRICT COMPLIANCE
+- **Options**: You MUST provide EXACTLY 4 options in every response. 
+- **JSON**: If the JSON is invalid, the story fails. Double-check your commas and quotes.
+`;
 
 export const EXTRACT_CHARACTERS_PROMPT = `Given the following story segment and a list of available character image filenames, identify the active characters and map them to the best matching filename.
 
