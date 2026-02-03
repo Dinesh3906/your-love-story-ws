@@ -31,6 +31,7 @@ try {
   }
 }
 
+/*
 // Register Service Worker for PWA
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
@@ -41,3 +42,4 @@ if ('serviceWorker' in navigator) {
     });
   });
 }
+*/
