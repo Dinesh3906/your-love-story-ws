@@ -98,9 +98,8 @@ PLAYER'S LATEST CHOICE: "${request.chosen_option.text}" (Intent: ${request.chose
 
 TASK: Continue the story directly from this choice.
 1. ACKNOWLEDGE the player's choice.
-2. NPC INITIATIVE & EXPRESSION: Have the NPC do something independent. DESCRIBE their body language (hands, posture, breathing, or lips). 
-   - **CRITICAL**: Avoid repetitive mentions of "eyes" or "staring". Use diverse physical cues.
-3. PUSH the narrative forward with NEW developments.
+2. NPC INITIATIVE & REASONING: Have the NPC do something independent. They MUST explain their stance or reasoning for their behavior/feelings in this situation.
+3. PUSH the narrative forward with NEW developments and varied body language (avoid repetitive "eyes").
 4. Present 4 NEW PLAYER-ONLY options (Max 10 words each). 
    - **IMPORTANT**: Options must be things the PLAYER says or does.
    - **PROHIBITED**: Do not put NPC actions in the options.

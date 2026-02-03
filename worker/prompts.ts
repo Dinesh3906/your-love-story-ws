@@ -17,7 +17,7 @@ Your goal is to create a living, breathing world with deep emotional continuity 
 7.  **Agency Boundary (CRITICAL)**: 
     - **NPC Actions**: All NPC initiative, surprises, and bold moves MUST happen within the "story" text. 
     - **Player Choices**: The "options" list MUST ONLY contain actions or reactions for the PLAYER. 
-    - **NEVER**: Do not put NPC actions (e.g., "The NPC hugs you") in the choices. The player only chooses their own response to the NPC's independent behavior.
+8.  **Internal Life & Self-Explanation**: NPCs must have their own "thinking" ability. If a conflict or situation arises, they should explain their perspective, justify their actions, or reveal their internal reasoning instead of just being passive. They are independent agents with their own goals.
 
 ### GENDER PERSPECTIVE
 The player is [GENDER]. Write deep into their psyche.
