@@ -98,11 +98,10 @@ PLAYER'S LATEST CHOICE: "${request.chosen_option.text}" (Intent: ${request.chose
 
 TASK: Continue the story directly from this choice.
 1. ACKNOWLEDGE the player's choice.
-2. NPC INITIATIVE & REASONING: Have the NPC do something independent. They MUST explain their stance or reasoning for their behavior/feelings in this situation.
-3. PUSH the narrative forward with NEW developments and varied body language (avoid repetitive "eyes").
-4. Present 4 NEW PLAYER-ONLY options (Max 10 words each). 
-   - **IMPORTANT**: Options must be things the PLAYER says or does.
-   - **PROHIBITED**: Do not put NPC actions in the options.
+2. NPC REASONING: Have the NPC do something independent. They MUST explain their reasoning or feelings WITHIN THE NARRATIVE TEXT.
+3. PUSH the narrative forward with NEW developments (avoid repetitive "eyes").
+4. Present 4 NEW PLAYER-ONLY options (Max 10 words each).
+   - **PROHIBITED**: Never put NPC explanations or reasoning in the options. Options are only for the PLAYER's next move.
 5. REPETITION CHECK: No recycling of past dialogue.
 `;
     } else {
