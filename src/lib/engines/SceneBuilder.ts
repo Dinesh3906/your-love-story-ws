@@ -20,25 +20,42 @@ export const SceneBuilder = {
     try {
       const { setRawNarrative, updateStats, userGender } = useGameStore.getState();
 
-      const API_URL = import.meta.env.VITE_API_URL || 'https://your-love-story.onrender.com';
-      const res = await fetch(`${API_URL}/generate`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          summary_of_previous: history.length > 0
-            ? `INITIAL PREMISE: ${userPrompt}\n\nPAST EVENTS:\n${history.slice(-15).join("\n---\n")}\n\nCURRENT SITUATION:`
-            : `INITIAL PREMISE: ${userPrompt}`,
-          user_gender: userGender,
-          chosen_option: chosenOption ? {
-            id: chosenOption.id,
-            text: chosenOption.text,
-            intent: (chosenOption as any).intent || ""
-          } : null
-        }),
-      });
+      const API_URL = import.meta.env.VITE_API_URL || 'https://your-love-story-ai-backend.yourlovestory.workers.dev';
 
-      if (!res.ok) {
-        throw new Error(`Server returned status: ${res.status}`);
+      let res;
+      let attempts = 0;
+      const maxAttempts = 3;
+
+      while (attempts < maxAttempts) {
+        try {
+          res = await fetch(`${API_URL}/generate`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              summary_of_previous: history.length > 0
+                ? `INITIAL PREMISE: ${userPrompt}\n\nPAST EVENTS:\n${history.slice(-15).join("\n---\n")}\n\nCURRENT SITUATION:`
+                : `INITIAL PREMISE: ${userPrompt}`,
+              user_gender: userGender,
+              chosen_option: chosenOption ? {
+                id: chosenOption.id,
+                text: chosenOption.text,
+                intent: (chosenOption as any).intent || ""
+              } : null
+            }),
+          });
+
+          if (res.ok) break;
+          throw new Error(`Status: ${res.status}`);
+        } catch (e) {
+          attempts++;
+          console.warn(`Attempt ${attempts} failed:`, e);
+          if (attempts >= maxAttempts) throw e;
+          await new Promise(r => setTimeout(r, 1500)); // Wait 1.5s before retry
+        }
+      }
+
+      if (!res || !res.ok) {
+        throw new Error(`Server returned status: ${res?.status}`);
       }
 
       const data = await res.json();
