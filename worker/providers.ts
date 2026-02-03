@@ -98,8 +98,9 @@ PLAYER'S LATEST CHOICE: "${request.chosen_option.text}" (Intent: ${request.chose
 
 TASK: Continue the story directly from this choice.
 1. ACKNOWLEDGE the player's choice immediately (don't ignore it).
-2. PUSH the narrative forward with tension or emotion.
+2. PUSH the narrative forward with NEW developments (do not repeat past beats).
 3. Present 2-4 NEW options (Max 10 words each).
+4. REPETITION CHECK: Ensure you are not reusing dialogue or situations already described in the context above.
 `;
     } else {
         user_input_section = `
