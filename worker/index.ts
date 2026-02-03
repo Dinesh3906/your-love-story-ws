@@ -67,7 +67,8 @@ export default {
             }
 
             if (!result) {
-                throw new Error("All AI providers reached their limit. Internal Log: " + errors.join(" | "));
+                const detailedError = `AI Providers Exhausted: ${errors.join(" | ")}`;
+                throw new Error(detailedError);
             }
 
             return new Response(JSON.stringify(result), {

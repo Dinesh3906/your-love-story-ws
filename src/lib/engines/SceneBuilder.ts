@@ -106,13 +106,19 @@ export const SceneBuilder = {
         };
       });
 
-    } catch (error) {
+    } catch (error: any) {
       console.error("Story generation failed:", error);
+
+      const errorMessage = error.message || "Unknown Connection Error";
+      const isRateLimit = errorMessage.includes("429") || errorMessage.toLowerCase().includes("limit");
+
       return [{
         id: 'fallback_scene',
-        title: 'Story Delay',
-        summary: 'Fallback',
-        dialogue: "Connecting to the mystical narrative stream...",
+        title: isRateLimit ? 'Narrative Traffic' : 'Story Delay',
+        summary: 'System Note',
+        dialogue: isRateLimit
+          ? "The whispers of fate are currently overwhelmed. Please wait a moment for the stars to align... (Rate Limit Hit)"
+          : `Connecting to the mystical narrative stream... (Error: ${errorMessage})`,
         speaker: 'System'
       }];
     }
