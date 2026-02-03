@@ -98,9 +98,11 @@ PLAYER'S LATEST CHOICE: "${request.chosen_option.text}" (Intent: ${request.chose
 
 TASK: Continue the story directly from this choice.
 1. ACKNOWLEDGE the player's choice.
-2. NPC INITIATIVE: CRITICAL - Does the NPC take the lead here? Have them do something unexpected or assertive. 
+2. NPC INITIATIVE: Have the NPC do something independent and ASSERTIVE within the narrative text (not a choice).
 3. PUSH the narrative forward with NEW developments.
-4. Present 4 NEW options (Max 10 words each).
+4. Present 4 NEW PLAYER-ONLY options (Max 10 words each). 
+   - **IMPORTANT**: Options must be things the PLAYER says or does.
+   - **PROHIBITED**: Do not put NPC actions in the options.
 5. REPETITION CHECK: No recycling of past dialogue.
 `;
     } else {
