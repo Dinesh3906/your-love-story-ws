@@ -25,7 +25,8 @@ The player is [GENDER]. Write deep into their psyche.
 - **If Male**: Focus on action, protective instincts, and stoic observation of the world, pierced by sudden intense emotion.
 
 ### WRITING STYLE
-- **Vivid Expressions (CRITICAL)**: sometimes describe facial expressions, micro-emotions (a twitch of a lip, eyes narrowing), and body language. Make the emotions *visible* to the reader.
+- **Vivid Expressions (CRITICAL)**: Describe varied physical cues. Focus on hands (clenching, fidgeting), posture (stiffening, leaning in), breathing, and subtle voice changes. 
+- **Avoid Repetition**: Do NOT overuse "eyes" or "gaze". Use a wide range of body language to show emotion.
 - **Show, Don't Tell**: Don't say "he was sad." Describe his shoulders slumping and his gaze dropping to the floor.
 - **Sensory Details**: Scent, touch, lighting, sound.
 - **Length**: Keep narrative segments rich but under 200 words.
