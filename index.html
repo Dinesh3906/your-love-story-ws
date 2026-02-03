@@ -17,6 +17,21 @@
   <link rel="icon" type="image/png" href="/pwa-icon.png" />
   <link rel="apple-touch-icon" href="/pwa-icon.png">
   <title>Your Love Story</title>
+  <script>
+    // Forcefully kill any ghost service workers that are caching the white screen
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then(registrations => {
+        for (const registration of registrations) {
+          registration.unregister().then(success => {
+            if (success) {
+              console.log("Stale Service Worker killed. Success!");
+              window.location.reload();
+            }
+          });
+        }
+      });
+    }
+  </script>
 </head>
 
 <body class="bg-black text-white overflow-hidden">
