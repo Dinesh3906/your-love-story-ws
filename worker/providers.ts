@@ -98,10 +98,11 @@ PLAYER'S LATEST CHOICE: "${request.chosen_option.text}" (Intent: ${request.chose
 
 TASK: Continue the story directly from this choice.
 1. ACKNOWLEDGE the player's choice.
-2. NPC REASONING: Have the NPC do something independent. They MUST explain their reasoning or feelings WITHIN THE NARRATIVE TEXT.
+2. NPC REASONING & LORE: Have the NPC do something independent. They MUST explain their reasoning, share lore (like a backstory for a tattoo or scar or any pain or ther cheating), or reveal a motivation WITHIN THE NARRATIVE TEXT. 
+   - **PROACTIVE**: They can explain themselves even if not asked.
 3. PUSH the narrative forward with NEW developments (avoid repetitive "eyes").
 4. Present 4 NEW PLAYER-ONLY options (Max 10 words each).
-   - **PROHIBITED**: Never put NPC explanations or reasoning in the options. Options are only for the PLAYER's next move.
+   - **PROHIBITED**: Never put NPC explanations or reasoning in the options.
 5. REPETITION CHECK: No recycling of past dialogue.
 `;
     } else {
