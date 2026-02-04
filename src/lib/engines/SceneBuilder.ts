@@ -18,11 +18,14 @@ export interface Scene {
 export const SceneBuilder = {
   buildScenes: async (userPrompt: string, history: string[] = [], chosenOption: Choice | null = null): Promise<Scene[]> => {
     try {
-      const { setRawNarrative, updateStats, userGender } = useGameStore.getState();
+      const { setRawNarrative, updateStats, userGender, getCurrentScene } = useGameStore.getState();
+      const currentScene = getCurrentScene();
+      const currentLocation = currentScene?.location;
 
       const API_URL = import.meta.env.VITE_API_URL || 'https://your-love-story-ai-backend.yourlovestory.workers.dev';
 
       let res;
+      let data;
       let attempts = 0;
       const maxAttempts = 3;
 
@@ -36,6 +39,7 @@ export const SceneBuilder = {
                 ? `INITIAL PREMISE: ${userPrompt}\n\nPAST EVENTS:\n${history.slice(-15).join("\n---\n")}\n\nCURRENT SITUATION:`
                 : `INITIAL PREMISE: ${userPrompt}`,
               user_gender: userGender,
+              current_location: currentLocation,
               chosen_option: chosenOption ? {
                 id: chosenOption.id,
                 text: chosenOption.text,
@@ -44,8 +48,20 @@ export const SceneBuilder = {
             }),
           });
 
-          if (res.ok) break;
-          throw new Error(`Status: ${res.status}`);
+          if (!res.ok) {
+            throw new Error(`Status: ${res.status}`);
+          }
+
+          data = await res.json();
+
+          if (!data || !data.story) {
+            console.error("Invalid response data:", data);
+            throw new Error("Invalid story content received (missing story field).");
+          }
+
+          // If we got here, we have valid data
+          break;
+
         } catch (e) {
           attempts++;
           console.warn(`Attempt ${attempts} failed:`, e);
@@ -54,16 +70,11 @@ export const SceneBuilder = {
         }
       }
 
-      if (!res || !res.ok) {
-        throw new Error(`Server returned status: ${res?.status}`);
+      if (!data) {
+        throw new Error("Failed to retrieve valid story data after multiple attempts.");
       }
 
-      const data = await res.json();
       setRawNarrative(JSON.stringify(data));
-
-      if (!data.story) {
-        throw new Error("Invalid story content received.");
-      }
 
       // Update global stats
       if (data.trust !== undefined) {
@@ -91,9 +102,17 @@ export const SceneBuilder = {
           dialogue = speakerMatch[2];
         }
 
+        // Logical Location Update:
+        // If the location has changed, only apply the NEW location to the LAST paragraph.
+        // Earlier paragraphs are considered transitional and keep the previous location.
+        const isLastParagraph = index === paragraphs.length - 1;
+        const currentParagraphLocation = (data.location_name !== currentLocation && !isLastParagraph)
+          ? (currentLocation || data.location_name)
+          : data.location_name;
+
         return {
           id: `scene_${Date.now()}_${index}`,
-          title: data.location_name || 'Ongoing Story',
+          title: currentParagraphLocation || 'Ongoing Story',
           summary: data.mood || 'Interactive Adventure',
           dialogue: dialogue,
           backgroundImage: undefined,
@@ -101,7 +120,7 @@ export const SceneBuilder = {
           speaker: speaker,
           mood: data.mood,
           tension: data.tension,
-          location: data.location_name,
+          location: currentParagraphLocation,
           time: data.time_of_day
         };
       });

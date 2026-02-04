@@ -33,9 +33,21 @@ Your goal is to create an immersive, emotionally charged experience that spans a
 ### CORE OBJECTIVES
 1.  **Dyanmic Genres**: The story should weave between deep romance, raw conflict, lighthearted humor (funny/ironic), and innocent wonder (childish/playful). If the setting allows, don't shy away from mystical or fantasy elements.
 2.  **Visceral Intensity**: Every scene must have stakes. Romance should be electric; humor should be sharp; fantasy should be awe-inspiring.
-3.  **Narrative Novelty**: STRICTURE: Do NOT repeat locations, plot beats, or specific phrases. Each segment should feel like a fresh step forward.
+3.  **Narrative Continuity & Spatial Logic**: 
+    - **Persistence**: Characters MUST stay in their current location unless a move is narratively justified and physically described.
+    - **Physical World Rules**: Characters cannot teleport. If they move, you MUST describe the journey (e.g., "Walking downstairs", "Driving to the park").
+    - **Logical Proximity**: Respect travel time. No instant jumps between far-away locations unless a time-skip is explicitly mentioned (e.g., "Two hours later, we arrived at...").
+    - **HUD Accuracy**: The `location_name` field MUST match the location where the story segment **ends**. If the character is still traveling at the end of the segment, use a transitional location like "On the way to [Destination]".
+    - **Narrative Freshness (ANTI-LOOP)**: Each response must advance the plot or relationship state. 
+    - **Banned Clichés**: You are FORBIDDEN from repeating these phrases or variations:
+        - "voice barely above a whisper" / "whispered softly" / "breathless whisper"
+        - "eyes locking" / "gaze met" (Use sparingly)
+        - "time seemed to stand still"
+        - "heart skipping a beat" (Limit use)
+    - **Physical Variety**: Instead of repeating "eyes" or "voice", describe hands (clenching, trembling), posture (stiffening, melting), breathing (hitching, slowing), or subtle environmental changes (the cold, the smell of rain).
+    - **No Repetition**: Do NOT use the same descriptive adjective twice in the same scene.
 4.  **Logical Flow & Resonance**: Directly resolve the PLAYER'S LATEST CHOICE or MANIFESTATION with immediate, deep consequences. If the player types a custom choice, treat it as a powerful narrative decree—incorporate its specific imagery and subtext before pivoting to the next dramatic peak.
-4.  **Fixed Choice Count**: Generate EXACTLY 4 unique options that offer distinct narrative paths. Options must be EXTREMELY SHORT (max 10 words).
+5.  **Fixed Choice Count**: Generate EXACTLY 4 unique options that offer distinct narrative paths. Options must be EXTREMELY SHORT (max 10 words).
 
 ### GENDER PERSPECTIVE
 The player is [GENDER]. You MUST write from their perspective.
@@ -69,6 +81,7 @@ class PromptRequest(BaseModel):
     summary_of_previous: str
     user_gender: str = "male"
     chosen_option: Optional[Dict] = None # {id, intent, text}
+    current_location: Optional[str] = None
 
 @app.post("/generate")
 async def generate(request: PromptRequest):
@@ -78,9 +91,14 @@ async def generate(request: PromptRequest):
         if request.chosen_option:
              user_input_section = f"""
 Previous Story Summary: {request.summary_of_previous}
+
+[SYSTEM INSTRUCTION: LOCATION PERSISTENCE]
+CURRENT LOCATION: {request.current_location or "Starting Point"}
 PLAYER'S LATEST CHOICE: "{request.chosen_option.get('text')}" (Intent: {request.chosen_option.get('intent')})
 
-TASK: Continue the story directly from this choice. Resolve the action. Then present 2-4 NEW options. 
+TASK: Continue THE SAME SCENE at the current location ({request.current_location or "Starting Point"}) unless the player's choice explicitly requires travel. 
+If and only if travel is required, describe the transition in the story text.
+Resolve the action. Then present 2-4 NEW options. 
 REMINDER: Options must be EXTREMELY SHORT (max 10 words).
 """
         else:

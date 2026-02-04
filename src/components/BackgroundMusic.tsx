@@ -1,121 +1,88 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { useGameStore } from '../store/gameStore';
-import { getMusicSrc, getMoodFromScene } from '../lib/engines/MusicEngine';
 
-// Re-export for GameScreen debug HUD
-export { getMoodFromScene };
+
 
 export const BackgroundMusic = () => {
-    const audioRef1 = useRef<HTMLAudioElement | null>(null);
-    const audioRef2 = useRef<HTMLAudioElement | null>(null);
-    const activePlayer = useRef<1 | 2>(1);
-    const currentSrcRef = useRef<string>('');
-
+    const audioRef = useRef<HTMLAudioElement | null>(null);
     const isMusicPlaying = useGameStore(state => state.isMusicPlaying);
-    const currentSceneId = useGameStore(state => state.currentSceneId);
-    const scenes = useGameStore(state => state.scenes);
 
-    const currentScene = scenes.find(s => s.id === currentSceneId);
-    const musicSrc = getMusicSrc(currentScene);
-
-    // Crossfade duration in milliseconds
-    const CROSSFADE_DURATION = 2000;
+    // Pick a song ONCE when the component mounts
+    // Using refs to ensure we don't pick a new song on re-renders
+    const selectedSongRef = useRef<string>('');
 
     useEffect(() => {
-        const handleInteraction = () => {
-            const currentAudio = activePlayer.current === 1 ? audioRef1.current : audioRef2.current;
-            if (currentAudio && isMusicPlaying && currentAudio.paused) {
-                currentAudio.play().catch(() => { });
-                window.removeEventListener('click', handleInteraction);
-                window.removeEventListener('keydown', handleInteraction);
-                window.removeEventListener('mousedown', handleInteraction);
-            }
-        };
+        // Only select a song if we haven't already
+        if (!selectedSongRef.current) {
+            const songs = ['/sparkle.mp3', '/audio/romantic.mp3'];
+            const randomIndex = Math.floor(Math.random() * songs.length);
+            selectedSongRef.current = songs[randomIndex];
+            console.log(`[Music] Selected startup track: ${selectedSongRef.current}`);
+        }
 
-        window.addEventListener('click', handleInteraction);
-        window.addEventListener('keydown', handleInteraction);
-        window.addEventListener('mousedown', handleInteraction);
+        if (audioRef.current) {
+            audioRef.current.src = selectedSongRef.current;
+            audioRef.current.playbackRate = 1.05; // Copyright safety
+        }
+    }, []);
 
-        return () => {
-            window.removeEventListener('click', handleInteraction);
-            window.removeEventListener('keydown', handleInteraction);
-            window.removeEventListener('mousedown', handleInteraction);
-        };
-    }, [isMusicPlaying]);
-
-    // Handle music source changes with crossfade
+    // Handle Play/Pause
     useEffect(() => {
-        if (!musicSrc || musicSrc === currentSrcRef.current) return;
-
-        const currentAudio = activePlayer.current === 1 ? audioRef1.current : audioRef2.current;
-        const nextAudio = activePlayer.current === 1 ? audioRef2.current : audioRef1.current;
-
-        if (!nextAudio) return;
-
-        // Set up the next track
-        nextAudio.src = musicSrc;
-        nextAudio.currentTime = 10; // Start at 10 seconds
-        nextAudio.playbackRate = 1.03;
-        nextAudio.volume = 0;
+        const audio = audioRef.current;
+        if (!audio) return;
 
         if (isMusicPlaying) {
-            nextAudio.play().catch(() => { });
-
-            // Crossfade
-            const startTime = Date.now();
-            const fadeInterval = setInterval(() => {
-                const elapsed = Date.now() - startTime;
-                const progress = Math.min(elapsed / CROSSFADE_DURATION, 1);
-
-                if (nextAudio) nextAudio.volume = progress;
-                if (currentAudio) currentAudio.volume = 1 - progress;
-
-                if (progress >= 1) {
-                    clearInterval(fadeInterval);
-                    if (currentAudio) {
-                        currentAudio.pause();
-                        currentAudio.volume = 1;
-                    }
-                    // Switch active player
-                    activePlayer.current = activePlayer.current === 1 ? 2 : 1;
-                }
-            }, 50);
-        }
-
-        currentSrcRef.current = musicSrc;
-    }, [musicSrc, isMusicPlaying]);
-
-    // Handle play/pause
-    useEffect(() => {
-        const currentAudio = activePlayer.current === 1 ? audioRef1.current : audioRef2.current;
-
-        if (currentAudio) {
-            if (isMusicPlaying) {
-                currentAudio.play().catch(() => { });
-            } else {
-                currentAudio.pause();
+            // Only try to play if we're paused
+            if (audio.paused) {
+                console.log('[Music] Power: ON - Playing');
+                audio.play().catch(e => console.error('[Music] Play failed:', e));
             }
+        } else {
+            console.log('[Music] Power: OFF - Pausing');
+            audio.pause();
         }
+    }, [isMusicPlaying]);
+
+    // Handle visibility change (pause when tab is hidden, resume when visible if music is on)
+    useEffect(() => {
+        const handleVisibilityChange = () => {
+            if (document.hidden) {
+                if (audioRef.current && !audioRef.current.paused) {
+                    console.log('[Music] Tab hidden, pausing');
+                    audioRef.current.pause();
+                }
+            } else {
+                // Determine if we should resume
+                if (isMusicPlaying && audioRef.current && audioRef.current.paused) {
+                    console.log('[Music] Tab visible, resuming');
+                    audioRef.current.play().catch(e => console.error('Resume failed:', e));
+                }
+            }
+        };
+
+        const handleInteraction = () => {
+            if (isMusicPlaying && audioRef.current && audioRef.current.paused) {
+                console.log('[Music] Interaction, resuming');
+                audioRef.current.play().catch(e => console.error('Interaction play failed:', e));
+            }
+        };
+
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+        window.addEventListener('click', handleInteraction, { once: true });
+        window.addEventListener('touchstart', handleInteraction, { once: true });
+
+        return () => {
+            document.removeEventListener('visibilitychange', handleVisibilityChange);
+            window.removeEventListener('click', handleInteraction);
+            window.removeEventListener('touchstart', handleInteraction);
+        };
     }, [isMusicPlaying]);
 
     return (
-        <>
-            <audio
-                ref={audioRef1}
-                src={musicSrc}
-                loop
-                preload="auto"
-                onLoadedData={(e) => {
-                    const audio = e.currentTarget;
-                    audio.currentTime = 10;
-                    audio.playbackRate = 1.03;
-                }}
-            />
-            <audio
-                ref={audioRef2}
-                loop
-                preload="auto"
-            />
-        </>
+        <audio
+            ref={audioRef}
+            loop
+            preload="auto"
+        />
     );
 };

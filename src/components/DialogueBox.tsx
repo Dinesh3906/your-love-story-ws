@@ -74,16 +74,21 @@ export default function DialogueBox({ speaker, text, onComplete }: Props) {
 
       <div className="flex justify-center sm:justify-end mt-6 sm:mt-14">
         <motion.button
-          whileHover={{ scale: 1.05, x: 12 }}
+          whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.94 }}
           onClick={handleProceed}
-          className="group flex items-center gap-4 sm:gap-8 text-white/30 hover:text-white transition-all duration-700"
+          className="group relative flex items-center justify-center"
         >
-          <span className="text-[9px] sm:text-[11px] uppercase tracking-[0.6em] font-black">
-            {isTyping ? 'SKIP' : 'PROCEED'}
-          </span>
-          <div className="w-10 sm:w-16 h-[1px] bg-white/10 group-hover:bg-cherry-blossom group-hover:w-24 transition-all duration-1000" />
-          <span className="text-cherry-blossom group-hover:scale-150 group-hover:rotate-12 transition-all duration-700 text-2xl sm:text-3xl">✧</span>
+          {/* Subtle Button Glow Backdrop */}
+          <div className="absolute inset-0 bg-white/5 rounded-full blur-xl group-hover:bg-cherry-blossom/10 transition-all duration-700"></div>
+
+          <div className="glass-morphism px-8 sm:px-12 py-3 sm:py-5 rounded-full border border-white/5 group-hover:border-white/20 transition-all duration-700 flex items-center gap-4 sm:gap-8 active:scale-95 shadow-2xl relative z-10">
+            <span className="text-[9px] sm:text-[11px] uppercase tracking-[0.6em] font-black text-white/40 group-hover:text-white transition-colors duration-500">
+              {isTyping ? 'SKIP' : 'PROCEED'}
+            </span>
+            <div className="w-8 sm:w-12 h-[1px] bg-white/10 group-hover:bg-cherry-blossom group-hover:w-16 transition-all duration-1000" />
+            <span className="text-cherry-blossom group-hover:scale-125 group-hover:rotate-12 transition-all duration-700 text-xl sm:text-2xl drop-shadow-[0_0_10px_rgba(255,183,197,0.5)]">✧</span>
+          </div>
         </motion.button>
       </div>
     </motion.div>

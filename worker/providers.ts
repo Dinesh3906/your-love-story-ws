@@ -97,15 +97,15 @@ ${request.summary_of_previous}
 PLAYER'S LATEST CHOICE: "${request.chosen_option.text}" (Intent: ${request.chosen_option.intent})
 
 TASK: Continue the story directly from this choice.
-1. ACKNOWLEDGE the player's choice.
+1. CONSEQUENCE: Immediately show the result of the player's action. Do NOT merely acknowledge it; show how it changes the world.
 2. DYNAMIC NPC MOOD & EXPLANATION: The NPC MUST provide a deep explanation or lore.
    - **BALANCE**: Do not default to anger. If the moment is intimate or neutral, have them be kind, vulnerable, or romantic.
    - **IF JUSTIFIED**: Only use aggression/scolding if the player's choice or the context creates intense conflict.
    - **MANDATORY**: All explanations and actions happen in the "story" text.
-3. PUSH the narrative forward with NEW developments (avoid repetitive "eyes").
+3. NOVELTY: Introduce a NEW element (visual, emotional, or plot-related) in this segment.
 4. Present 4 NEW PLAYER-ONLY options (Max 10 words each).
    - **ZERO TOLERANCE**: Do NOT put NPC explanations or reasoning in the options. Options are only for the PLAYER's response to the NPC's explanation.
-5. REPETITION CHECK: No recycling of past dialogue.
+5. REPETITION CHECK: No recycling of past dialogue or "body language beats" (e.g. avoid repeating "eyes locking").
 `;
     } else {
         user_input_section = `

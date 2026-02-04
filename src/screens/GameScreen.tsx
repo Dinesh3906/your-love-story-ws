@@ -4,7 +4,7 @@ import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from
 import { useGameStore } from '../store/gameStore';
 import DialogueBox from '../components/DialogueBox';
 import ChoiceButtons from '../components/ChoiceButtons';
-import { getMoodFromScene } from '../lib/engines/MusicEngine';
+
 import { SceneBuilder } from '../lib/engines/SceneBuilder';
 import { BranchEngine, Choice } from '../lib/engines/BranchEngine';
 

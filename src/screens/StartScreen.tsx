@@ -154,7 +154,7 @@ export default function StartScreen({ onStart }: { onStart: () => void }) {
               <div className='relative'>
                 <textarea
                   className='w-full h-48 sm:h-64 lg:h-72 p-7 sm:p-8 rounded-[24px] sm:rounded-[28px] lg:rounded-[24px] bg-black/50 border border-white/40 outline-none transition-all resize-none font-sans text-base sm:text-lg text-white/90 placeholder-white/40 focus:border-cherry-blossom/20 focus:ring-1 focus:ring-cherry-blossom/5 custom-scrollbar leading-relaxed'
-                  placeholder='Write your story or manifestation in 2 to 3 lines...'
+                  placeholder='Write your fantacy or story here in 3-4 lines...'
                   value={input}
                   onChange={e => setInput(e.target.value)}
                 />
