@@ -3,17 +3,8 @@ main = "worker/index.ts"
 compatibility_date = "2024-01-01"
 
 [vars]
-# Groq Keys Pool (10 Keys for high throughput)
-GROQ_API_KEY_1 = "sk_HeuHgfvXI4481VkKbM0lWGdyb3FYJiAc5XqfEmxCxvNiOIWCJH8f"
-GROQ_API_KEY_2 = "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"
-GROQ_API_KEY_3 = "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"
-GROQ_API_KEY_4 = "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"
-GROQ_API_KEY_5 = "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"
-GROQ_API_KEY_6 = "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"
-GROQ_API_KEY_7 = "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"
-GROQ_API_KEY_8 = "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"
-GROQ_API_KEY_9 = "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"
-GROQ_API_KEY_10 = "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"
+# API keys are now managed securely via .dev.vars (for local) 
+# and wrangler secrets (for production) to avoid Git leaks.
+VITE_API_URL = "https://your-love-story-ai-backend.yourlovestory.workers.dev"
 
 # Add Gemini keys here if you get them later
-# GEMINI_API_KEY_1 = "..."

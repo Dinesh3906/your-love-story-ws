@@ -26,49 +26,67 @@ export default {
             return new Response("Method not allowed", { status: 405, headers: corsHeaders });
         }
 
+        let reqBody: any = null;
         try {
-            const reqBody: any = await request.json();
+            reqBody = await request.json();
             const userPrompt = buildUserPrompt(reqBody);
 
             // --- STRATEGY: Key Rotation & Provider Fallback ---
-            const groqKeys = Object.keys(env).filter(k => k.startsWith('GROQ_API_KEY')).map(k => (env as any)[k]);
+            // Only use keys that look valid for Groq (must start with gsk_)
+            const groqKeys = Object.keys(env)
+                .filter(k => k.startsWith('GROQ_API_KEY'))
+                .map(k => (env as any)[k])
+                .filter(key => key && key.startsWith('gsk_'));
+
             const geminiKeys = Object.keys(env).filter(k => k.startsWith('GEMINI_API_KEY')).map(k => (env as any)[k]);
 
             let result = null;
             let errors = [];
 
-            // 1. Try Groq
+            // 1. Try Groq (With full key rotation)
             if (groqKeys.length > 0) {
-                const randomKey = groqKeys[Math.floor(Math.random() * groqKeys.length)];
-                try {
-                    result = await generateWithGroq(randomKey, userPrompt, SYSTEM_PROMPT);
-                } catch (e: any) {
-                    errors.push(`Groq Error: ${e.message}`);
+                const shuffledKeys = [...groqKeys].sort(() => Math.random() - 0.5);
+
+                for (const key of shuffledKeys) {
+                    try {
+                        result = await generateWithGroq(key, userPrompt, SYSTEM_PROMPT);
+                        if (result) break;
+                    } catch (e: any) {
+                        const status = e.message.includes('429') ? 'Rate Limited' : e.message;
+                        errors.push(`Groq (${status})`);
+                    }
                 }
             }
 
-            // 2. Fallback: Gemini
+            // 2. Fallback: Gemini (With full key rotation)
             if (!result && geminiKeys.length > 0) {
-                const randomKey = geminiKeys[Math.floor(Math.random() * geminiKeys.length)];
-                try {
-                    result = await generateWithGemini(randomKey, userPrompt, SYSTEM_PROMPT);
-                } catch (e: any) {
-                    errors.push(`Gemini Error: ${e.message}`);
+                const shuffledKeys = [...geminiKeys].sort(() => Math.random() - 0.5);
+                for (const key of shuffledKeys) {
+                    try {
+                        result = await generateWithGemini(key, userPrompt, SYSTEM_PROMPT);
+                        if (result) break;
+                    } catch (e: any) {
+                        errors.push(`Gemini (${e.message})`);
+                        continue;
+                    }
                 }
             }
 
-            // 3. Fallback: Pollinations
+            // 3. Fallback: Pollinations (with retry)
             if (!result) {
-                try {
-                    result = await generateWithPollinations(userPrompt, SYSTEM_PROMPT);
-                } catch (e: any) {
-                    errors.push(`Pollinations Error: ${e.message}`);
+                for (let i = 0; i < 2; i++) {
+                    try {
+                        result = await generateWithPollinations(userPrompt, SYSTEM_PROMPT);
+                        if (result) break;
+                    } catch (e: any) {
+                        errors.push(`Pollinations: ${e.message}`);
+                        if (i === 0) await new Promise(r => setTimeout(r, 1000));
+                    }
                 }
             }
 
             if (!result) {
-                const detailedError = `AI Providers Exhausted: ${errors.join(" | ")}`;
-                throw new Error(detailedError);
+                throw new Error(errors.join(", "));
             }
 
             return new Response(JSON.stringify(result), {
@@ -76,12 +94,25 @@ export default {
             });
 
         } catch (e: any) {
-            return new Response(JSON.stringify({
-                error: e.message,
-                details: "Check Cloudflare or API keys status",
-                fallback_active: true
-            }), {
-                status: 200, // Return 200 so the frontend catch doesn't trigger immediately, allowing us to see the error message in JSON
+            // Narrative Fallback: Instead of a technical error, return a valid story segment
+            const isRateLimit = e.message.includes('Rate Limited');
+            const storyText = isRateLimit
+                ? "The narrative stream is currently overcrowded. The whispers of fate are faint as you wait for the path ahead to clear."
+                : "A strange mist clouds your vision. The whispers of fate are currently overwhelmed as you wait for the path ahead to clear.";
+
+            const fallbackResponse = {
+                story: storyText,
+                mood: "Mysterious",
+                tension: 50,
+                trust: 50,
+                location_name: reqBody?.current_location || "The Void",
+                time_of_day: "Unknown",
+                options: [
+                    { id: "retry", text: "Try to see through the mist again.", intent: "focused" }
+                ]
+            };
+
+            return new Response(JSON.stringify(fallbackResponse), {
                 headers: { ...corsHeaders, "Content-Type": "application/json" }
             });
         }
