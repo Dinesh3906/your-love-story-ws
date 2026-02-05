@@ -53,7 +53,7 @@ export default function DialogueBox({ speaker, text, onComplete }: Props) {
             initial={{ opacity: 0, scale: 0.8, x: -20, rotateZ: -2 }}
             animate={{ opacity: 1, scale: 1, x: 0, rotateZ: 0 }}
             exit={{ opacity: 0, scale: 1.2, x: 20, rotateZ: 2 }}
-            className="absolute -top-6 sm:-top-10 left-6 sm:left-14 lg:left-1/2 lg:-translate-x-1/2 lg:translate-x-0 py-2 sm:py-4 px-6 sm:px-12 bg-gradient-to-r from-cherry-blossom via-cherry-light to-cherry-blossom bg-[length:200%_auto] rounded-full z-40 shadow-2xl shadow-cherry-blossom/40 border border-white/10"
+            className="absolute -top-6 sm:-top-10 left-6 sm:left-14 py-2 sm:py-4 px-6 sm:px-12 bg-gradient-to-r from-cherry-blossom via-cherry-light to-cherry-blossom bg-[length:200%_auto] rounded-full z-40 shadow-2xl shadow-cherry-blossom/40 border border-white/10"
             style={{ animation: 'backgroundShift 6s linear infinite' }}
           >
             <span className="text-[9px] sm:text-[11px] font-black uppercase tracking-[0.5em] text-midnight text-shadow-sm">
@@ -72,7 +72,7 @@ export default function DialogueBox({ speaker, text, onComplete }: Props) {
         </div>
       </div>
 
-      <div className="flex justify-end lg:justify-center mt-4 sm:mt-14">
+      <div className="flex justify-end mt-4 sm:mt-14">
         <motion.button
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.94 }}
