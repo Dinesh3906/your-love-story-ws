@@ -98,7 +98,7 @@ export default {
             const isRateLimit = e.message.includes('Rate Limited');
             const storyText = isRateLimit
                 ? "The narrative stream is currently overcrowded. The whispers of fate are faint as you wait for the path ahead to clear."
-                : "A strange mist clouds your vision. The whispers of fate are currently overwhelmed as you wait for the path ahead to clear.";
+                : `A strange mist clouds your vision. The whispers of fate are currently overwhelmed as you wait for the path ahead to clear. (Debug Error: ${e.message})`;
 
             const fallbackResponse = {
                 story: storyText,
