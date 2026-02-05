@@ -18,9 +18,52 @@ export interface Scene {
 export const SceneBuilder = {
   buildScenes: async (userPrompt: string, history: string[] = [], chosenOption: Choice | null = null): Promise<Scene[]> => {
     try {
-      const { setRawNarrative, updateStats, userGender, getCurrentScene } = useGameStore.getState();
+      const { setRawNarrative, setStats, userGender, getCurrentScene, stats, stateTracker, updateStateTracker } = useGameStore.getState();
       const currentScene = getCurrentScene();
       const currentLocation = currentScene?.location;
+
+      // Update State Tracker Logic (Before request)
+      const now = Date.now();
+      let lastTrustTimestamp = stateTracker.lastTrust100Timestamp;
+      if (stats.trust >= 100) {
+        if (!lastTrustTimestamp) lastTrustTimestamp = now;
+      } else {
+        lastTrustTimestamp = null;
+      }
+
+      const locationCounts = { ...stateTracker.locationVisitCounts };
+      if (currentLocation) {
+        locationCounts[currentLocation] = (locationCounts[currentLocation] || 0) + 1;
+      }
+
+      const currentIntent = chosenOption?.intent || "";
+      const lastIntents = [...stateTracker.lastIntents, currentIntent].slice(-10);
+
+      let consecutiveIntentCount = 1;
+      for (let i = lastIntents.length - 2; i >= 0; i--) {
+        if (lastIntents[i] === currentIntent && currentIntent !== "") consecutiveIntentCount++;
+        else break;
+      }
+
+      const consecutiveLowRel = stats.relationship < 10 ? stateTracker.consecutiveLowRelScenes + 1 : 0;
+
+      const indicators = {
+        seconds_at_max_trust: lastTrustTimestamp ? Math.floor((now - lastTrustTimestamp) / 1000) : 0,
+        consecutive_intent_count: consecutiveIntentCount,
+        last_intent: currentIntent,
+        location_visit_count: currentLocation ? locationCounts[currentLocation] : 0,
+        consecutive_low_rel_scenes: consecutiveLowRel,
+        total_scenes: history.length,
+        time_of_day: currentScene?.time || "Unknown"
+      };
+
+      // Sync back to store
+      updateStateTracker({
+        lastTrust100Timestamp: lastTrustTimestamp,
+        locationVisitCounts: locationCounts,
+        lastIntents,
+        consecutiveLowRelScenes: consecutiveLowRel
+      });
 
       const API_URL = import.meta.env.VITE_API_URL || 'https://your-love-story-ai-backend.yourlovestory.workers.dev';
 
@@ -40,6 +83,12 @@ export const SceneBuilder = {
                 : `INITIAL PREMISE: ${userPrompt}`,
               user_gender: userGender,
               current_location: currentLocation,
+              current_stats: {
+                relationship: stats.relationship,
+                trust: stats.trust,
+                tension: stats.tension
+              },
+              indicators: indicators,
               chosen_option: chosenOption ? {
                 id: chosenOption.id,
                 text: chosenOption.text,
@@ -76,19 +125,14 @@ export const SceneBuilder = {
 
       setRawNarrative(JSON.stringify(data));
 
-      // Update global stats
-      if (data.trust !== undefined) {
-        updateStats({
-          trust: data.trust - 50,
-          relationship: data.trust - 50
-        });
-      }
-
-      if (data.tension !== undefined) {
-        useGameStore.setState((s: any) => ({
-          stats: { ...s.stats, tension: data.tension }
-        }));
-      }
+      // Logical Stat Update:
+      // We now expect 'trust' and 'tension' to be absolute values from the AI
+      // And we might add 'relationship' as well.
+      setStats({
+        relationship: data.relationship,
+        trust: data.trust,
+        tension: data.tension
+      });
 
       const paragraphs = data.story.split(/\n\n+/).filter((p: string) => p.trim().length > 0);
 

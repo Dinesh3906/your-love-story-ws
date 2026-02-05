@@ -2,7 +2,7 @@ import { Env, generateWithGroq, generateWithGemini, generateWithPollinations, bu
 import { SYSTEM_PROMPT } from './prompts';
 
 export default {
-    async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
+    async fetch(request: Request, env: Env, ctx: any): Promise<Response> {
         // Handle CORS
         const corsHeaders = {
             "Access-Control-Allow-Origin": "*",
@@ -27,6 +27,7 @@ export default {
         }
 
         let reqBody: any = null;
+        let keyInfo = "(Keys: Not yet checked)";
         try {
             reqBody = await request.json();
             const userPrompt = buildUserPrompt(reqBody);
@@ -39,6 +40,8 @@ export default {
                 .filter(key => key && key.startsWith('gsk_'));
 
             const geminiKeys = Object.keys(env).filter(k => k.startsWith('GEMINI_API_KEY')).map(k => (env as any)[k]);
+
+            keyInfo = `(Groq Keys: ${groqKeys.length}, Gemini Keys: ${geminiKeys.length})`;
 
             let result = null;
             let errors = [];
@@ -98,7 +101,7 @@ export default {
             const isRateLimit = e.message.includes('Rate Limited');
             const storyText = isRateLimit
                 ? "The narrative stream is currently overcrowded. The whispers of fate are faint as you wait for the path ahead to clear."
-                : `A strange mist clouds your vision. The whispers of fate are currently overwhelmed as you wait for the path ahead to clear. (Debug Error: ${e.message})`;
+                : `A strange mist clouds your vision. The whispers of fate are currently overwhelmed as you wait for the path ahead to clear. \n\n[Debug: ${keyInfo} | Error: ${e.message}]`;
 
             const fallbackResponse = {
                 story: storyText,

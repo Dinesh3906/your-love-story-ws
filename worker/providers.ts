@@ -1,5 +1,23 @@
 import { SYSTEM_PROMPT } from './prompts';
 
+function safeJsonParse(text: string): any {
+    try {
+        // Try direct parse first
+        return JSON.parse(text);
+    } catch {
+        // Find JSON block if it exists
+        const match = text.match(/\{[\s\S]*\}/);
+        if (match) {
+            try {
+                return JSON.parse(match[0]);
+            } catch {
+                throw new Error("Found JSON-like block but failed to parse it.");
+            }
+        }
+        throw new Error("No valid JSON found in response.");
+    }
+}
+
 export interface Env {
     GROQ_API_KEY?: string;
     GEMINI_API_KEY?: string;
@@ -10,6 +28,20 @@ export interface PromptRequest {
     summary_of_previous: string;
     user_gender: string;
     current_location?: string;
+    current_stats?: {
+        relationship: number;
+        trust: number;
+        tension: number;
+    };
+    indicators?: {
+        seconds_at_max_trust: number;
+        consecutive_intent_count: number;
+        last_intent: string;
+        location_visit_count: number;
+        consecutive_low_rel_scenes: number;
+        total_scenes: number;
+        time_of_day: string;
+    };
     chosen_option?: {
         id: string;
         text: string;
@@ -24,10 +56,10 @@ export async function generateWithPollinations(prompt: string, systemPrompt: str
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
             messages: [
-                { role: 'system', content: systemPrompt },
+                { role: 'system', content: `${systemPrompt}\n\nIMPORTANT: You are a JSON-only engine. Respond ONLY with technical JSON based on the schema requested. No prose, no markdown blocks.` },
                 { role: 'user', content: prompt }
             ],
-            model: 'openai',
+            model: 'mistral',
             jsonMode: true,
             max_tokens: 1500
         })
@@ -35,7 +67,7 @@ export async function generateWithPollinations(prompt: string, systemPrompt: str
 
     if (!response.ok) throw new Error(`Pollinations Status: ${response.status}`);
     const text = await response.text();
-    return JSON.parse(text);
+    return safeJsonParse(text);
 }
 
 // --- Groq (Fastest) ---
@@ -97,6 +129,15 @@ ${request.summary_of_previous}
 
 [SYSTEM INSTRUCTION: LOCATION PERSISTENCE]
 CURRENT LOCATION: ${request.current_location || "Starting Point"}
+CURRENT STATS: Relationship: ${request.current_stats?.relationship}%, Trust: ${request.current_stats?.trust}%, Tension: ${request.current_stats?.tension}%
+BEHAVIORAL INDICATORS:
+- Trust Status: At maximum (100%) for ${request.indicators?.seconds_at_max_trust || 0} seconds
+- Intention Streak: "${request.indicators?.last_intent}" repeated ${request.indicators?.consecutive_intent_count || 0} times
+- Location Familiarity: Current location visited ${request.indicators?.location_visit_count || 0} times
+- Low Relationship Streak: ${request.indicators?.consecutive_low_rel_scenes || 0} scenes
+- Scene Depth: Segment #${request.indicators?.total_scenes || 0} in this session
+- Real-time: ${request.indicators?.time_of_day || "Unknown"}
+
 PLAYER'S LATEST CHOICE: "${request.chosen_option.text}" (Intent: ${request.chosen_option.intent})
 
 TASK: Continue THE SAME SCENE at the current location (${request.current_location || "Starting Point"}) unless the player's choice explicitly requires travel. 

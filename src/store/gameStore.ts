@@ -23,6 +23,15 @@ export interface Scene {
   time?: string;
 }
 
+export interface StateTracker {
+  lastTrust100Timestamp: number | null;
+  consecutiveIntents: Record<string, number>;
+  locationVisitCounts: Record<string, number>;
+  consecutiveLowRelScenes: number;
+  lastIntents: string[];
+  lastMoods: string[];
+}
+
 export interface GameState {
   currentSceneId: string | null;
   currentPOV: string | null;
@@ -40,6 +49,7 @@ export interface GameState {
   userGender: 'male' | 'female';
   isMusicPlaying: boolean;
   characterBindings: Record<string, string>; // Maps relational roles to names
+  stateTracker: StateTracker;
 
   setScenes: (scenes: Scene[]) => void;
   setCharacters: (chars: Character[]) => void;
@@ -53,11 +63,13 @@ export interface GameState {
   setCharacterBindings: (bindings: Record<string, string>) => void;
   getCurrentScene: () => Scene | null;
   updateStats: (effects: { relationship?: number; trust?: number }) => void;
+  setStats: (stats: { relationship?: number; trust?: number; tension?: number }) => void;
+  updateStateTracker: (updates: Partial<StateTracker>) => void;
   addToHistory: (entry: string) => void;
   resetGame: () => void;
 }
 
-const initialState: Omit<GameState, 'setScenes' | 'setCharacters' | 'updateCharacter' | 'setCurrentScene' | 'setCurrentPOV' | 'setUserPrompt' | 'setUserGender' | 'setIsMusicPlaying' | 'setRawNarrative' | 'setCharacterBindings' | 'getCurrentScene' | 'updateStats' | 'addToHistory' | 'resetGame'> = {
+const initialState: Omit<GameState, 'setScenes' | 'setCharacters' | 'updateCharacter' | 'setCurrentScene' | 'setCurrentPOV' | 'setUserPrompt' | 'setUserGender' | 'setIsMusicPlaying' | 'setRawNarrative' | 'setCharacterBindings' | 'getCurrentScene' | 'updateStats' | 'setStats' | 'updateStateTracker' | 'addToHistory' | 'resetGame'> = {
   currentSceneId: null,
   currentPOV: null,
   characters: [],
@@ -69,6 +81,14 @@ const initialState: Omit<GameState, 'setScenes' | 'setCharacters' | 'updateChara
   userGender: 'male' as const,
   isMusicPlaying: true,
   characterBindings: {},
+  stateTracker: {
+    lastTrust100Timestamp: null,
+    consecutiveIntents: {},
+    locationVisitCounts: {},
+    consecutiveLowRelScenes: 0,
+    lastIntents: [],
+    lastMoods: [],
+  },
 };
 
 export const useGameStore = create<GameState>((set, get) => ({
@@ -95,6 +115,17 @@ export const useGameStore = create<GameState>((set, get) => ({
       relationship: Math.min(100, Math.max(0, s.stats.relationship + (effects.relationship || 0))),
       trust: Math.min(100, Math.max(0, s.stats.trust + (effects.trust || 0))),
     }
+  })),
+  setStats: (newStats) => set((s) => ({
+    stats: {
+      ...s.stats,
+      relationship: newStats.relationship !== undefined ? Math.min(100, Math.max(0, newStats.relationship)) : s.stats.relationship,
+      trust: newStats.trust !== undefined ? Math.min(100, Math.max(0, newStats.trust)) : s.stats.trust,
+      tension: newStats.tension !== undefined ? Math.min(100, Math.max(0, newStats.tension)) : s.stats.tension,
+    }
+  })),
+  updateStateTracker: (updates) => set((s) => ({
+    stateTracker: { ...s.stateTracker, ...updates }
   })),
   addToHistory: (entry) => set((s) => ({ history: [...s.history, entry] })),
   resetGame: () => set(initialState),

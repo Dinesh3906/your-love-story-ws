@@ -67,8 +67,8 @@ export default function ChoiceButtons({ choices, onChoiceSelect }: Props) {
                         type="submit"
                         disabled={!customChoice.trim()}
                         className={`px-4 sm:px-8 h-full py-2.5 sm:py-4 lg:py-5 transition-all duration-300 flex items-center gap-2 border-l border-cherry-blossom/20 ${customChoice.trim()
-                                ? 'bg-cherry-blossom/20 text-cherry-blossom hover:bg-cherry-blossom/30'
-                                : 'opacity-10 grayscale'
+                            ? 'bg-cherry-blossom/20 text-cherry-blossom hover:bg-cherry-blossom/30'
+                            : 'opacity-10 grayscale'
                             }`}
                     >
                         <span className="text-[8px] sm:text-[10px] font-black uppercase tracking-[0.2em] hidden sm:block">Manifest</span>

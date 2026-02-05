@@ -41,7 +41,7 @@ export default function DialogueBox({ speaker, text, onComplete }: Props) {
       initial={{ opacity: 0, y: 50, rotateX: 5 }}
       animate={{ opacity: 1, y: 0, rotateX: 0 }}
       transition={{ duration: 1.2, ease: "easeOut" }}
-      className="glass-morphism rounded-[24px] sm:rounded-[32px] md:rounded-[40px] lg:rounded-[48px] p-5 sm:p-8 md:p-10 lg:p-12 xl:p-16 shadow-2xl relative z-10 neon-border"
+      className="glass-morphism rounded-[24px] sm:rounded-[32px] md:rounded-[40px] lg:rounded-[48px] p-5 sm:p-7 md:p-8 lg:p-10 xl:p-12 shadow-2xl relative z-10 neon-border"
     >
       {/* Soft Cherry Glow Backdrop */}
       <div className='absolute -bottom-32 -right-32 w-80 h-80 bg-cherry-blossom/5 rounded-full blur-[100px] pointer-events-none'></div>
@@ -63,7 +63,7 @@ export default function DialogueBox({ speaker, text, onComplete }: Props) {
         )}
       </AnimatePresence>
 
-      <div className="relative pt-4 sm:pt-8">
+      <div className="relative pt-3 sm:pt-6">
         <div className="min-h-[100px] sm:min-h-[120px] lg:min-h-[160px] max-h-[40vh] md:max-h-[50vh] overflow-y-auto custom-scrollbar pr-0 sm:pr-8">
           <p className="text-white/95 text-[18px] sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl font-serif leading-[1.6] md:leading-[1.6] tracking-wide selection:bg-cherry-blossom/30 italic font-light sm:drop-shadow-sm text-center sm:text-left">
             {displayText}
@@ -72,7 +72,7 @@ export default function DialogueBox({ speaker, text, onComplete }: Props) {
         </div>
       </div>
 
-      <div className="flex justify-end mt-4 sm:mt-14">
+      <div className="flex justify-end mt-3 sm:mt-10">
         <motion.button
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.94 }}

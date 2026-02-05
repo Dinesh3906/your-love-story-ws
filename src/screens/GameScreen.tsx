@@ -211,12 +211,12 @@ export default function GameScreen({ onGameOver }: { onGameOver: () => void }) {
           {/* Relationship Stats */}
           <div className='glass-morphism px-3 py-2 sm:px-8 sm:py-4 rounded-[16px] sm:rounded-[24px] flex items-center gap-3 sm:gap-8 border-white/5 pointer-events-auto'>
             <div className='flex flex-col'>
-              <span className='text-[7px] sm:text-[10px] uppercase tracking-[0.3em] text-cherry-blossom font-black'>Affinity</span>
+              <span className='text-[7px] sm:text-[10px] uppercase tracking-[0.3em] text-cherry-blossom font-black'>Relationship</span>
               <span className='text-sm sm:text-2xl font-serif text-white uppercase leading-tight'>{stats.relationship}%</span>
             </div>
             <div className='w-[1px] h-6 sm:h-10 bg-white/10'></div>
             <div className='flex flex-col'>
-              <span className='text-[7px] sm:text-[10px] uppercase tracking-[0.3em] text-soft-lavender font-black'>Bond</span>
+              <span className='text-[7px] sm:text-[10px] uppercase tracking-[0.3em] text-soft-lavender font-black'>Trust</span>
               <span className='text-sm sm:text-2xl font-serif text-white uppercase leading-tight'>{stats.trust}%</span>
             </div>
           </div>
@@ -285,7 +285,7 @@ export default function GameScreen({ onGameOver }: { onGameOver: () => void }) {
       <div className='absolute inset-0 z-10 pointer-events-none noise-overlay opacity-5'></div>
 
       {/* Story Narrative Layer */}
-      <div className='flex-1 flex flex-col justify-center sm:justify-end pt-28 md:pt-36 lg:pt-44 xl:pt-52 pb-16 sm:pb-10 px-4 sm:px-10 lg:px-20 relative z-30 depth-container'>
+      <div className='flex-1 flex flex-col justify-center sm:justify-end pt-12 md:pt-20 lg:pt-24 xl:pt-32 pb-12 sm:pb-8 px-4 sm:px-10 lg:px-20 relative z-30 depth-container'>
         <div className='w-full max-w-[1100px] xl:max-w-[1400px] mx-auto'>
           {!showChoices ? (
             <DialogueBox
