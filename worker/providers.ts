@@ -97,7 +97,7 @@ export async function generateWithGroq(apiKey: string, prompt: string, systemPro
 
 // --- Gemini (Free Tier) ---
 export async function generateWithGemini(apiKey: string, prompt: string, systemPrompt: string): Promise<any> {
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
 
     const response = await fetch(url, {
         method: 'POST',
