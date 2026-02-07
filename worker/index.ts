@@ -82,26 +82,10 @@ export default {
             });
 
         } catch (e: any) {
-            // Narrative Fallback: Instead of a technical error, return a valid story segment
-            const isRateLimit = e.message.includes('Rate Limited');
-            const storyText = isRateLimit
-                ? "The narrative stream is currently overcrowded. The whispers of fate are faint as you wait for the path ahead to clear."
-                : `A strange mist clouds your vision. The whispers of fate are currently overwhelmed as you wait for the path ahead to clear. \n\n[Debug: ${keyInfo} | Error: ${e.message}]`;
-
-            const fallbackResponse = {
-                story: storyText,
-                mood: "Mysterious",
-                tension: 50,
-                trust: 50,
-                location_name: reqBody?.current_location || "The Void",
-                time_of_day: "Unknown",
-                options: [
-                    { id: "retry", text: "Try to see through the mist again.", intent: "focused" }
-                ]
-            };
-
-            return new Response(JSON.stringify(fallbackResponse), {
-                headers: { ...corsHeaders, "Content-Type": "application/json" }
+            // Return 503 to trigger frontend retry logic (SceneBuilder.ts has a retry loop)
+            return new Response(e.message || "Service Unavailable", {
+                status: 503,
+                headers: corsHeaders
             });
         }
     }
