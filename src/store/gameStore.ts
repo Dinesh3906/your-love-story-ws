@@ -51,6 +51,7 @@ export interface GameState {
   isMusicPlaying: boolean;
   characterBindings: Record<string, string>; // Maps relational roles to names
   stateTracker: StateTracker;
+  notifications: { id: string; title: string; subtitle: string; icon?: string }[];
 
   setScenes: (scenes: Scene[]) => void;
   setCharacters: (chars: Character[]) => void;
@@ -67,10 +68,13 @@ export interface GameState {
   setStats: (stats: { relationship?: number; trust?: number; tension?: number; vulnerable?: boolean }) => void;
   updateStateTracker: (updates: Partial<StateTracker>) => void;
   addToHistory: (entry: string) => void;
+  applyEphemeralReward: (type: 'trust' | 'relationship' | 'vulnerable') => void;
+  addNotification: (title: string, subtitle: string, icon?: string) => void;
+  removeNotification: (id: string) => void;
   resetGame: () => void;
 }
 
-const initialState: Omit<GameState, 'setScenes' | 'setCharacters' | 'updateCharacter' | 'setCurrentScene' | 'setCurrentPOV' | 'setUserPrompt' | 'setUserGender' | 'setIsMusicPlaying' | 'setRawNarrative' | 'setCharacterBindings' | 'getCurrentScene' | 'updateStats' | 'setStats' | 'updateStateTracker' | 'addToHistory' | 'resetGame'> = {
+const initialState: Omit<GameState, 'setScenes' | 'setCharacters' | 'updateCharacter' | 'setCurrentScene' | 'setCurrentPOV' | 'setUserPrompt' | 'setUserGender' | 'setIsMusicPlaying' | 'setRawNarrative' | 'setCharacterBindings' | 'getCurrentScene' | 'updateStats' | 'setStats' | 'updateStateTracker' | 'addToHistory' | 'applyEphemeralReward' | 'addNotification' | 'removeNotification' | 'resetGame'> = {
   currentSceneId: null,
   currentPOV: null,
   characters: [],
@@ -90,6 +94,7 @@ const initialState: Omit<GameState, 'setScenes' | 'setCharacters' | 'updateChara
     lastIntents: [],
     lastMoods: [],
   },
+  notifications: [],
 };
 
 export const useGameStore = create<GameState>((set, get) => ({
@@ -131,5 +136,41 @@ export const useGameStore = create<GameState>((set, get) => ({
     stateTracker: { ...s.stateTracker, ...updates }
   })),
   addToHistory: (entry) => set((s) => ({ history: [...s.history, entry] })),
+  applyEphemeralReward: (type) => {
+    const { stats, setStats, addNotification } = get();
+
+    // 1. Apply Reward and Trigger Notification
+    if (type === 'trust') {
+      setStats({ ...stats, trust: 100 });
+      addNotification("ABSOLUTE TRUST", "She places her faith in you entirely.");
+    } else if (type === 'relationship') {
+      setStats({ ...stats, relationship: 100 });
+      addNotification("SOUL CONNECTION", "The invisible red threads are glowing.");
+    } else if (type === 'vulnerable') {
+      setStats({ ...stats, vulnerable: true });
+      addNotification("OPEN HEART", "Her defenses are down. Ask her anything.");
+    }
+
+    // 2. Start Decay Timer (120 seconds)
+    console.log(`[Reward] ${type} applied. Resetting in 120 seconds...`);
+    setTimeout(() => {
+      console.log(`[Reward] 120s elapsed. Resetting ${type} to baseline.`);
+      const currentStats = get().stats;
+      if (type === 'trust') setStats({ ...currentStats, trust: 50 });
+      else if (type === 'relationship') setStats({ ...currentStats, relationship: 50 });
+      else if (type === 'vulnerable') setStats({ ...currentStats, vulnerable: false });
+    }, 120000);
+  },
+  addNotification: (title, subtitle, icon) => {
+    const id = Math.random().toString(36).substr(2, 9);
+    set(s => ({
+      notifications: [{ id, title, subtitle, icon }, ...s.notifications]
+    }));
+    // Auto-remove after 6 seconds
+    setTimeout(() => get().removeNotification(id), 6000);
+  },
+  removeNotification: (id) => set(s => ({
+    notifications: s.notifications.filter(n => n.id !== id)
+  })),
   resetGame: () => set(initialState),
 }));

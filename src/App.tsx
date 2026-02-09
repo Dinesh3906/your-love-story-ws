@@ -5,6 +5,7 @@ import GameScreen from './screens/GameScreen';
 import EndingScreen from './screens/EndingScreen';
 import { BackgroundMusic } from './components/BackgroundMusic';
 import { MusicControls } from './components/MusicControls';
+import { AchievementOverlay } from './components/AchievementOverlay';
 
 function App() {
   const [gameState, setGameState] = useState<'start' | 'playing' | 'ending'>('start');
@@ -49,6 +50,7 @@ function App() {
         {gameState === 'playing' && <GameScreen onGameOver={handleGameOver} />}
         {gameState === 'ending' && <EndingScreen onRestart={handleRestart} />}
       </div>
+      <AchievementOverlay />
       <MusicControls />
     </div>
   );

@@ -44,10 +44,18 @@ export const AdRewardModal = ({ isOpen, onClose }: AdRewardModalProps) => {
 
             const options: RewardAdOptions = {
                 adId: ADMOB_AD_UNIT_ID,
-                // Use a test ID for development if needed: 'ca-app-pub-3940256099942544/5224354917'
             };
 
-            await AdMob.prepareRewardVideoAd(options);
+            try {
+                await AdMob.prepareRewardVideoAd(options);
+            } catch (error) {
+                console.warn('Live Ad failed, falling back to Test ID...', error);
+                // TEST ID for Rewarded Ads: ca-app-pub-3940256099942544/5224354917
+                await AdMob.prepareRewardVideoAd({
+                    adId: 'ca-app-pub-3940256099942544/5224354917'
+                });
+            }
+
             const reward = await AdMob.showRewardVideoAd();
 
             if (reward) {
@@ -63,13 +71,8 @@ export const AdRewardModal = ({ isOpen, onClose }: AdRewardModalProps) => {
     };
 
     const applyReward = (type: 'trust' | 'relationship' | 'vulnerable') => {
-        if (type === 'trust') {
-            setStats({ ...stats, trust: 100 });
-        } else if (type === 'relationship') {
-            setStats({ ...stats, relationship: 100 });
-        } else if (type === 'vulnerable') {
-            setStats({ ...stats, vulnerable: true });
-        }
+        const { applyEphemeralReward } = useGameStore.getState();
+        applyEphemeralReward(type);
         onClose();
     };
 
