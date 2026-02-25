@@ -1,6 +1,8 @@
 import { useState, useEffect, useMemo } from 'react';
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import { useGameStore } from '../store/gameStore';
+import HistoryModal from '../components/HistoryModal';
+import ProfileModal from '../components/ProfileModal';
 
 const CherryPetalSystem = () => {
   const petals = useMemo(() =>
@@ -61,10 +63,14 @@ const CherryPetalSystem = () => {
 export default function StartScreen({ onStart }: { onStart: () => void }) {
   const [input, setInput] = useState('');
   const [gender, setGender] = useState<'male' | 'female'>('male');
-  const { resetGame, setUserPrompt, setUserGender } = useGameStore();
+  const [isHistoryOpen, setIsHistoryOpen] = useState(false);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const { resetGame, setUserPrompt, setUserGender, scenes, userPrompt, storyLength, setStoryLength, user } = useGameStore();
 
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
+
+  const hasProgress = scenes.length > 0;
 
   const springConfig = { damping: 40, stiffness: 80 };
   const smoothX = useSpring(mouseX, springConfig);
@@ -87,6 +93,10 @@ export default function StartScreen({ onStart }: { onStart: () => void }) {
     resetGame();
     setUserPrompt(input);
     setUserGender(gender);
+    onStart();
+  };
+
+  const handleContinue = () => {
     onStart();
   };
 
@@ -131,6 +141,22 @@ export default function StartScreen({ onStart }: { onStart: () => void }) {
       <div className='lg:hidden w-full pt-safe pb-4 text-center relative z-20 px-6'>
         <h1 className='text-4xl sm:text-6xl md:text-8xl font-serif text-white tracking-widest text-glow-romantic animate-title-shimmer inline-block font-black'>YOUR LOVE STORY</h1>
         <p className='mt-2 text-[15px] sm:text-lg md:text-2xl text-white/80 font-script'>Only the heart remembers what the mind forgets.</p>
+      </div>
+
+      {/* Top Left Profile Button */}
+      <div className="absolute top-6 left-6 z-50 pt-safe">
+        <button
+          onClick={() => setIsProfileOpen(true)}
+          className='glass-morphism p-3 sm:p-4 rounded-full border-white/5 pointer-events-auto text-white/60 hover:text-white transition-colors cursor-pointer group flex items-center justify-center'
+        >
+          {user ? (
+            <img src={user.picture} alt="Profile" className="w-6 h-6 rounded-full" />
+          ) : (
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 group-hover:scale-110 transition-transform">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+            </svg>
+          )}
+        </button>
       </div>
 
       {/* RIGHT SIDE: Interactive glassmorphism card (40%) */}
@@ -186,21 +212,72 @@ export default function StartScreen({ onStart }: { onStart: () => void }) {
                   </button>
                 </div>
               </div>
+
+              {/* Story Length Selection */}
+              <div className='space-y-4'>
+                <div className="flex items-center justify-center sm:justify-start gap-4">
+                  <span className="text-cherry-blossom text-sm">✧</span>
+                  <label className='text-[10px] uppercase tracking-[0.5em] text-cherry-blossom font-black text-center sm:text-left'>Duration of the Dream</label>
+                </div>
+                <div className='flex p-1 bg-black/40 rounded-2xl border border-white/10 backdrop-blur-md relative overflow-hidden'>
+                  <motion.div
+                    className='absolute top-1 bottom-1 w-[calc(33.33%-4px)] bg-white/10 rounded-xl border border-white/20'
+                    animate={{ x: storyLength === 'short' ? 0 : storyLength === 'medium' ? '100%' : '200%' }}
+                    transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                  />
+                  {(['short', 'medium', 'long'] as const).map((len) => (
+                    <button
+                      key={len}
+                      onClick={() => setStoryLength(len)}
+                      className={`flex-1 py-3 text-[9px] font-black tracking-[0.1em] uppercase relative z-10 transition-colors duration-300 ${storyLength === len ? 'text-white' : 'text-white/40 hover:text-white/60'}`}
+                    >
+                      {len}
+                    </button>
+                  ))}
+                </div>
+              </div>
             </div>
 
-            <motion.button
-              whileHover={{ scale: 1.05, boxShadow: '0 0 50px rgba(255, 183, 197, 0.4)' }}
-              whileTap={{ scale: 0.96 }}
-              onClick={handleStart}
-              className='w-full py-5 sm:py-6 lg:py-5 rounded-2xl bg-gradient-to-br from-cherry-blossom via-soft-lavender to-cherry-blossom bg-[length:200%_auto] hover:bg-right transition-all duration-700 text-midnight font-black tracking-[0.4em] text-[11px] sm:text-[12px] lg:text-[10px] shadow-[0_20px_60px_-15px_rgba(255,183,197,0.3)] relative overflow-hidden group'
-            >
-              <span className='relative z-10'>BEGIN JOURNEY</span>
-              <div className='absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-700'></div>
-            </motion.button>
+            <div className="space-y-4">
+              {hasProgress && (
+                <motion.button
+                  whileHover={{ scale: 1.05, backgroundPosition: 'right' }}
+                  whileTap={{ scale: 0.96 }}
+                  onClick={handleContinue}
+                  className='w-full py-4 rounded-2xl bg-white/10 border border-white/20 text-white font-black tracking-[0.4em] text-[10px] shadow-xl backdrop-blur-md transition-all'
+                >
+                  CONTINUE JOURNEY
+                </motion.button>
+              )}
+
+              <motion.button
+                whileHover={{ scale: 1.05, boxShadow: '0 0 50px rgba(255, 183, 197, 0.4)' }}
+                whileTap={{ scale: 0.96 }}
+                onClick={handleStart}
+                className='w-full py-5 sm:py-6 lg:py-5 rounded-2xl bg-gradient-to-br from-cherry-blossom via-soft-lavender to-cherry-blossom bg-[length:200%_auto] hover:bg-right transition-all duration-700 text-midnight font-black tracking-[0.4em] text-[11px] sm:text-[12px] lg:text-[10px] shadow-[0_20px_60px_-15px_rgba(255,183,197,0.3)] relative overflow-hidden group'
+              >
+                <span className='relative z-10'>{hasProgress ? 'START OVER' : 'BEGIN JOURNEY'}</span>
+                <div className='absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-700'></div>
+              </motion.button>
+
+              <button
+                onClick={() => setIsHistoryOpen(true)}
+                className="w-full py-2 text-[9px] uppercase tracking-[0.6em] text-white/40 hover:text-cherry-blossom transition-all font-black mt-4"
+              >
+                View Story Archive
+              </button>
+            </div>
           </div>
         </motion.div>
       </div>
 
+      <HistoryModal isOpen={isHistoryOpen}
+        onClose={() => setIsHistoryOpen(false)}
+      />
+      <ProfileModal
+        isOpen={isProfileOpen}
+        onClose={() => setIsProfileOpen(false)}
+      />
       {/* Ambient light for mobile */}
       <div className='lg:hidden absolute bottom-[-15%] left-1/2 -translate-x-1/2 w-96 h-96 bg-cherry-blossom/20 rounded-full blur-[120px] z-10 animate-pulse-bloom'></div>
     </div>

@@ -4,22 +4,25 @@ import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from
 import { useGameStore } from '../store/gameStore';
 import DialogueBox from '../components/DialogueBox';
 import ChoiceButtons from '../components/ChoiceButtons';
+import ProfileModal from '../components/ProfileModal';
 
 import { SceneBuilder } from '../lib/engines/SceneBuilder';
 import { BranchEngine, Choice } from '../lib/engines/BranchEngine';
 
-const CherryPetalSystem = () => {
-  const petals = Array.from({ length: 15 }).map((_, i) => ({
+import { memo, useMemo } from 'react';
+
+const CherryPetalSystem = memo(() => {
+  const petals = useMemo(() => Array.from({ length: 10 }).map((_, i) => ({
     id: i,
-    size: Math.random() * 15 + 8,
+    size: Math.random() * 12 + 6,
     x: Math.random() * 100,
     y: -5,
-    duration: Math.random() * 8 + 7,
+    duration: Math.random() * 10 + 10,
     delay: Math.random() * 5,
-    windX: Math.random() * 300 + 100,
+    windX: Math.random() * 200 + 50,
     windY: 1000,
-    windZ: (Math.random() - 0.5) * 300,
-  }));
+    windZ: (Math.random() - 0.5) * 200,
+  })), []);
 
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none z-10">
@@ -34,6 +37,7 @@ const CherryPetalSystem = () => {
             height: p.size,
             backgroundImage: 'url("/cherry_petal.png")',
             backgroundSize: 'cover',
+            willChange: 'transform, opacity'
           }}
           animate={{
             x: [0, p.windX],
@@ -41,7 +45,7 @@ const CherryPetalSystem = () => {
             z: [0, p.windZ],
             rotateX: [0, 360],
             rotateY: [0, 720],
-            opacity: [0, 0.6, 0.6, 0],
+            opacity: [0, 0.4, 0.4, 0],
           }}
           transition={{
             duration: p.duration,
@@ -53,11 +57,12 @@ const CherryPetalSystem = () => {
       ))}
     </div>
   );
-};
+});
 
 export default function GameScreen({ onGameOver }: { onGameOver: () => void }) {
-  const { stats, scenes, setScenes, getCurrentScene, setCurrentScene, updateStats, userPrompt, history, addToHistory } = useGameStore();
+  const { stats, scenes, setScenes, getCurrentScene, setCurrentScene, updateStats, setStats, userPrompt, history, addToHistory, user } = useGameStore();
   const [showChoices, setShowChoices] = useState(false);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [choices, setChoices] = useState<Choice[]>([]);
   const [sceneIndex, setSceneIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
@@ -126,6 +131,20 @@ export default function GameScreen({ onGameOver }: { onGameOver: () => void }) {
   };
 
   const [lastChoice, setLastChoice] = useState<Choice | null>(null);
+  const [customInput, setCustomInput] = useState('');
+  const [isInputOpen, setIsInputOpen] = useState(false);
+
+  const handleCustomSubmit = () => {
+    if (!customInput.trim()) return;
+    handleChoiceSelect({
+      id: 'custom_' + Date.now(),
+      text: customInput,
+      intent: 'manifestation',
+      effects: {}
+    });
+    setCustomInput('');
+    setIsInputOpen(false);
+  };
 
   const handleChoiceSelect = async (choice: Choice) => {
     if (choice.id === 'narrative_retry') {
@@ -148,18 +167,36 @@ export default function GameScreen({ onGameOver }: { onGameOver: () => void }) {
     addToHistory(`Choice: ${choice.text}`);
     setIsLoading(true);
     setShowChoices(false);
+    setIsInputOpen(false);
 
     try {
       const nextScenes = await SceneBuilder.buildScenes(userPrompt, history, choice);
 
-      // APPEND scenes instead of replacing to allow "Previous" navigation
-      const updatedScenes = [...scenes, ...nextScenes];
-      setScenes(updatedScenes);
+      // Check if the narrative has ended
+      const lastSceneRaw = nextScenes[nextScenes.length - 1] as any;
+      if (lastSceneRaw.is_ending) {
+        // APPEND scenes
+        const updatedScenes = [...scenes, ...nextScenes];
+        setScenes(updatedScenes);
 
-      // Start at the first NEW scene
-      const newIndex = scenes.length;
-      setSceneIndex(newIndex);
-      setCurrentScene(nextScenes[0].id);
+        // Final text segment
+        const newIndex = scenes.length;
+        setSceneIndex(newIndex);
+        setCurrentScene(nextScenes[0].id);
+
+        // Archive and transition after a delay or on next click
+        useGameStore.getState().archiveCurrentStory();
+        setTimeout(() => onGameOver(), 5000); // Give time to read the final segment
+      } else {
+        // APPEND scenes instead of replacing to allow "Previous" navigation
+        const updatedScenes = [...scenes, ...nextScenes];
+        setScenes(updatedScenes);
+
+        // Start at the first NEW scene
+        const newIndex = scenes.length;
+        setSceneIndex(newIndex);
+        setCurrentScene(nextScenes[0].id);
+      }
 
       // ONLY add to history if it's NOT a fallback scene
       if (nextScenes[0].id !== 'fallback_mist_scene') {
@@ -213,6 +250,33 @@ export default function GameScreen({ onGameOver }: { onGameOver: () => void }) {
           animate={{ opacity: 1, x: 0 }}
           className='flex gap-4'
         >
+          <button
+            onClick={() => setIsProfileOpen(true)}
+            className='glass-morphism p-3 sm:p-4 rounded-full border-white/5 pointer-events-auto text-white/60 hover:text-white transition-colors cursor-pointer group'
+          >
+            {user ? (
+              <img src={user.picture} alt="Profile" className="w-5 h-5 rounded-full" />
+            ) : (
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 group-hover:scale-110 transition-transform">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+              </svg>
+            )}
+          </button>
+
+          {/* Home Button */}
+          <button
+            onClick={() => {
+              if (window.confirm("Return to main menu? Your current progress is saved.")) {
+                window.location.reload(); // Simplest way to go back to start state with persistence
+              }
+            }}
+            className='glass-morphism p-3 sm:p-4 rounded-full border-white/5 pointer-events-auto text-white/60 hover:text-white transition-colors cursor-pointer group'
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 group-hover:scale-110 transition-transform">
+              <path strokeLinecap="round" strokeLinejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
+            </svg>
+          </button>
+
           {/* Relationship Stats */}
           <div className='glass-morphism px-3 py-2 sm:px-8 sm:py-4 rounded-[16px] sm:rounded-[24px] flex items-center gap-3 sm:gap-8 border-white/5 pointer-events-auto'>
             <div className='flex flex-col'>
@@ -245,22 +309,44 @@ export default function GameScreen({ onGameOver }: { onGameOver: () => void }) {
           </div>
           <div className='text-[8px] sm:text-[10px] uppercase tracking-[0.3em] text-white/40 mr-1'>Tension</div>
         </motion.div>
+
+        {/* Vulnerable Mode Toggle */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="absolute top-[80px] sm:top-[120px] right-3 sm:right-6 lg:right-16 pointer-events-auto"
+        >
+          <button
+            onClick={() => {
+              const current = stats.vulnerable;
+              setStats({ ...stats, vulnerable: !current });
+              if (!current) {
+                useGameStore.getState().addNotification("VULNERABLE MODE", "The wall around her heart has crumbled.");
+              }
+            }}
+            className={`px-4 py-2 rounded-full border text-[8px] sm:text-[10px] uppercase tracking-[0.2em] transition-all duration-500 flex items-center gap-2 ${stats.vulnerable ? 'bg-cherry-blossom/20 border-cherry-blossom text-cherry-blossom shadow-[0_0_15px_rgba(255,183,197,0.3)]' : 'bg-black/20 border-white/10 text-white/40 hover:text-white/60'}`}
+          >
+            <div className={`w-1.5 h-1.5 rounded-full ${stats.vulnerable ? 'bg-cherry-blossom animate-pulse' : 'bg-white/20'}`}></div>
+            Vulnerable Mode
+          </button>
+        </motion.div>
       </div>
 
       {/* Dynamic Scene Background */}
       <AnimatePresence mode='wait'>
         <motion.div
           key={currentScene.backgroundImage || currentScene.id}
-          initial={{ opacity: 0, scale: 1.2 }}
+          initial={{ opacity: 0, scale: 1.05 }}
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 2.5 }}
+          transition={{ duration: 1.5, ease: "easeOut" }}
           className='absolute inset-0 z-0'
           style={{
             backgroundImage: currentScene.backgroundImage ? `url(${currentScene.backgroundImage})` : 'none',
             backgroundSize: 'cover',
             backgroundPosition: 'center',
-            backgroundColor: '#0a0a0f'
+            backgroundColor: '#0a0a0f',
+            willChange: 'transform, opacity'
           }}
         />
       </AnimatePresence>
@@ -305,15 +391,52 @@ export default function GameScreen({ onGameOver }: { onGameOver: () => void }) {
               className='space-y-8 sm:space-y-10'
             >
               <div className='text-center px-4'>
-                <span className='px-10 py-3 glass-morphism text-cherry-blossom rounded-full text-[11px] font-black uppercase tracking-[0.5em] neon-border shadow-2xl'>
+                <span className='px-8 py-2.5 glass-morphism text-cherry-blossom rounded-full text-[10px] font-black uppercase tracking-[0.4em] neon-border'>
                   THE WHISPER OF FATE
                 </span>
               </div>
-              <div className='max-w-[850px] mx-auto'>
-                <ChoiceButtons
-                  choices={choices}
-                  onChoiceSelect={handleChoiceSelect}
-                />
+              <div className='max-w-[850px] mx-auto space-y-6'>
+                {!isInputOpen ? (
+                  <>
+                    <ChoiceButtons
+                      choices={choices}
+                      onChoiceSelect={handleChoiceSelect}
+                    />
+                    <div className="flex justify-center">
+                      <button
+                        onClick={() => setIsInputOpen(true)}
+                        className="py-2 px-8 text-[9px] uppercase tracking-[0.4em] text-white/40 hover:text-cherry-blossom transition-all border border-white/5 rounded-full hover:bg-white/5"
+                      >
+                        Write your own response...
+                      </button>
+                    </div>
+                  </>
+                ) : (
+                  <div className="glass-morphism p-6 sm:p-8 rounded-[32px] border-white/10 animate-in fade-in zoom-in duration-300">
+                    <textarea
+                      value={customInput}
+                      onChange={(e) => setCustomInput(e.target.value)}
+                      placeholder="Type your heart's desire..."
+                      className="w-full h-32 bg-black/40 border border-white/10 rounded-2xl p-4 text-white focus:border-cherry-blossom/50 outline-none transition-all resize-none font-serif text-lg custom-scrollbar"
+                      autoFocus
+                    />
+                    <div className="flex justify-between items-center mt-4">
+                      <button
+                        onClick={() => setIsInputOpen(false)}
+                        className="text-[10px] uppercase tracking-[0.2em] text-white/40 hover:text-white transition-all"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        onClick={handleCustomSubmit}
+                        disabled={!customInput.trim()}
+                        className="py-3 px-10 bg-cherry-blossom rounded-xl text-midnight font-black text-[11px] uppercase tracking-[0.3em] shadow-lg disabled:opacity-50 disabled:cursor-not-allowed hover:scale-105 transition-all"
+                      >
+                        Seal Fate
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
             </motion.div>
           )}
@@ -334,6 +457,10 @@ export default function GameScreen({ onGameOver }: { onGameOver: () => void }) {
           </motion.button>
         )}
       </div>
+      <ProfileModal
+        isOpen={isProfileOpen}
+        onClose={() => setIsProfileOpen(false)}
+      />
     </div>
   );
 }

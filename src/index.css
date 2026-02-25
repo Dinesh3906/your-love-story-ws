@@ -39,19 +39,21 @@
 .depth-container {
     perspective: 2000px;
     transform-style: preserve-3d;
+    will-change: transform;
 }
 
 /* Cinematic Romantic Utilities */
 .glass-morphism {
-    @apply backdrop-blur-[30px] bg-white/5 border border-white/10;
-    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.6),
-        inset 0 0 32px rgba(255, 183, 197, 0.1);
+    @apply backdrop-blur-[20px] bg-white/5 border border-white/10;
+    box-shadow: 0 4px 24px 0 rgba(0, 0, 0, 0.4);
+    will-change: backdrop-filter, transform;
 }
 
 .neon-border {
     position: relative;
     border: 1px solid transparent;
     background-clip: padding-box;
+    will-change: opacity;
 }
 
 .neon-border::after {

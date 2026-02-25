@@ -1,3 +1,9 @@
+interface KVNamespace {
+    get(key: string, options?: { type?: 'text' | 'json' | 'arrayBuffer' | 'stream' }): Promise<any>;
+    put(key: string, value: string | ArrayBuffer | ArrayBufferView | ReadableStream): Promise<void>;
+    delete(key: string): Promise<void>;
+}
+
 import { SYSTEM_PROMPT } from './prompts';
 
 function safeJsonParse(text: string): any {
@@ -21,6 +27,7 @@ function safeJsonParse(text: string): any {
 export interface Env {
     GROQ_API_KEY?: string;
     HF_API_KEY?: string;
+    USER_HISTORY?: KVNamespace;
 }
 
 export interface PromptRequest {
@@ -46,6 +53,11 @@ export interface PromptRequest {
         id: string;
         text: string;
         intent: string;
+    };
+    user_preferences?: {
+        likes: string[];
+        dislikes: string[];
+        description: string;
     };
     system_override?: string;
 }
@@ -146,6 +158,10 @@ THEN: Present 2-4 NEW options (Max 10 words each).
 `;
     }
     user_input_section += `\nREMINDER: The player is ${request.user_gender}. Maintain this perspective.`;
+
+    if (request.user_preferences?.description) {
+        user_input_section += `\n\n[USER PERSONALITY & PREFERENCES]\n${request.user_preferences.description}\nIMPORTANT: Involve these likes and dislikes naturally in the story. Refract them through the world and the NPC's interactions with the player.`;
+    }
 
     if (request.system_override) {
         user_input_section += `\n\n${request.system_override}\n\n`;

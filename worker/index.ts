@@ -22,6 +22,47 @@ export default {
             });
         }
 
+        if (request.url.endsWith("/sync") && request.method === "POST") {
+            try {
+                const { userId, archive } = await request.json() as any;
+                if (!userId) throw new Error("Missing userId");
+
+                // Get existing archive from KV
+                const kvKey = `user:${userId}:archive`;
+                const cloudArchiveRaw = env.USER_HISTORY ? await env.USER_HISTORY.get(kvKey) : null;
+                let cloudArchive = cloudArchiveRaw ? JSON.parse(cloudArchiveRaw) : [];
+
+                // Merge archives (Cloud takes priority for same IDs)
+                const mergedMap = new Map();
+                // Add cloud items first
+                cloudArchive.forEach((item: any) => mergedMap.set(item.id, item));
+                // Add local items if they don't exist
+                if (archive && Array.isArray(archive)) {
+                    archive.forEach((item: any) => {
+                        if (!mergedMap.has(item.id)) {
+                            mergedMap.set(item.id, item);
+                        }
+                    });
+                }
+
+                const finalArchive = Array.from(mergedMap.values()).sort((a, b) => b.timestamp - a.timestamp);
+
+                // Save back to KV
+                if (env.USER_HISTORY) {
+                    await env.USER_HISTORY.put(kvKey, JSON.stringify(finalArchive));
+                }
+
+                return new Response(JSON.stringify({ status: "success", archive: finalArchive }), {
+                    headers: { ...corsHeaders, "Content-Type": "application/json" }
+                });
+            } catch (e: any) {
+                return new Response(JSON.stringify({ error: e.message }), {
+                    status: 400,
+                    headers: { ...corsHeaders, "Content-Type": "application/json" }
+                });
+            }
+        }
+
         if (request.method !== "POST") {
             return new Response("Method not allowed", { status: 405, headers: corsHeaders });
         }

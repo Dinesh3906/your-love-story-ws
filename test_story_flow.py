@@ -32,6 +32,7 @@ try:
             print(f"Trust: {data.get('trust', 'N/A')}")
             print(f"Location: {data.get('location_name', 'N/A')}")
             print(f"Time: {data.get('time_of_day', 'N/A')}")
+            print(f"Ending: {data.get('is_ending', 'N/A')}")
                 
     else:
         print(f"Request failed: {response.status_code}")

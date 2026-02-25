@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface Props {
@@ -7,7 +7,7 @@ interface Props {
   onComplete?: () => void;
 }
 
-export default function DialogueBox({ speaker, text, onComplete }: Props) {
+export default memo(function DialogueBox({ speaker, text, onComplete }: Props) {
   const [displayText, setDisplayText] = useState('');
   const [isTyping, setIsTyping] = useState(true);
 
@@ -93,4 +93,4 @@ export default function DialogueBox({ speaker, text, onComplete }: Props) {
       </div>
     </motion.div>
   );
-}
+});

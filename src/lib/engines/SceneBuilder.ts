@@ -13,12 +13,13 @@ export interface Scene {
   tension?: number;
   location?: string;
   time?: string;
+  is_ending?: boolean;
 }
 
 export const SceneBuilder = {
   buildScenes: async (userPrompt: string, history: string[] = [], chosenOption: Choice | null = null): Promise<Scene[]> => {
     try {
-      const { setRawNarrative, setStats, userGender, getCurrentScene, stats, stateTracker, updateStateTracker } = useGameStore.getState();
+      const { setRawNarrative, setStats, userGender, getCurrentScene, stats, stateTracker, updateStateTracker, user } = useGameStore.getState();
       const currentScene = getCurrentScene();
       const currentLocation = currentScene?.location === 'The Mist' ? undefined : currentScene?.location;
 
@@ -90,6 +91,8 @@ export const SceneBuilder = {
                 vulnerable: stats.vulnerable
               },
               indicators: indicators,
+              story_length: useGameStore.getState().storyLength,
+              user_preferences: user?.preferences,
               chosen_option: chosenOption ? {
                 id: chosenOption.id,
                 text: chosenOption.text,
@@ -169,7 +172,8 @@ export const SceneBuilder = {
           mood: data.mood,
           tension: data.tension,
           location: currentParagraphLocation,
-          time: data.time_of_day
+          time: data.time_of_day,
+          is_ending: data.is_ending
         };
       });
 

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, memo } from 'react';
 import { motion } from 'framer-motion';
 import { Choice } from '../lib/engines/BranchEngine';
 
@@ -7,7 +7,7 @@ interface Props {
     onChoiceSelect: (choice: Choice) => void;
 }
 
-export default function ChoiceButtons({ choices, onChoiceSelect }: Props) {
+export default memo(function ChoiceButtons({ choices, onChoiceSelect }: Props) {
     const [customChoice, setCustomChoice] = useState('');
 
     const handleCustomSubmit = (e?: React.FormEvent) => {
@@ -78,4 +78,4 @@ export default function ChoiceButtons({ choices, onChoiceSelect }: Props) {
             </motion.form>
         </div>
     );
-}
+});
