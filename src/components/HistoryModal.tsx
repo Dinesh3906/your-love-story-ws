@@ -4,10 +4,17 @@ import { useGameStore, ArchivedStory } from '../store/gameStore';
 interface HistoryModalProps {
     isOpen: boolean;
     onClose: () => void;
+    onSelect?: () => void;
 }
 
-export default function HistoryModal({ isOpen, onClose }: HistoryModalProps) {
-    const { archive } = useGameStore();
+export default function HistoryModal({ isOpen, onClose, onSelect }: HistoryModalProps) {
+    const { archive, resumeStory } = useGameStore();
+
+    const handleResume = (id: string) => {
+        resumeStory(id);
+        onSelect?.();
+        onClose();
+    };
 
     return (
         <AnimatePresence>
@@ -53,14 +60,20 @@ export default function HistoryModal({ isOpen, onClose }: HistoryModalProps) {
                                         key={story.id}
                                         initial={{ opacity: 0, x: -20 }}
                                         whileInView={{ opacity: 1, x: 0 }}
+                                        whileHover={{ scale: 1.02 }}
+                                        whileTap={{ scale: 0.98 }}
                                         viewport={{ once: true }}
-                                        className="p-8 rounded-3xl bg-white/5 border border-white/5 hover:border-cherry-blossom/20 transition-all group relative overflow-hidden"
+                                        onClick={() => handleResume(story.id)}
+                                        className="p-8 rounded-3xl bg-white/5 border border-white/5 hover:border-cherry-blossom/40 transition-all group relative overflow-hidden cursor-pointer"
                                     >
                                         <div className='absolute -top-24 -right-24 w-48 h-48 bg-cherry-blossom/5 rounded-full blur-[60px] group-hover:bg-cherry-blossom/10 transition-all duration-1000'></div>
 
                                         <div className="flex flex-col sm:flex-row justify-between items-start gap-4 mb-6 relative z-10">
                                             <div className="flex-1">
-                                                <span className="text-[10px] uppercase tracking-[0.4em] text-cherry-blossom font-black">Initial Premise</span>
+                                                <div className='flex items-center gap-3'>
+                                                    <span className="text-[10px] uppercase tracking-[0.4em] text-cherry-blossom font-black">Initial Premise</span>
+                                                    <span className='px-3 py-1 bg-cherry-blossom/20 text-cherry-blossom text-[8px] font-black uppercase tracking-[0.2em] rounded-full opacity-0 group-hover:opacity-100 transition-opacity'>Resume Story</span>
+                                                </div>
                                                 <h3 className="text-white/90 text-lg sm:text-xl font-serif mt-2 line-clamp-2 italic">"{story.prompt}"</h3>
                                             </div>
                                             <div className="text-right shrink-0">
@@ -83,7 +96,10 @@ export default function HistoryModal({ isOpen, onClose }: HistoryModalProps) {
                                         <div className="space-y-4 relative z-10">
                                             <div className="h-[1px] w-full bg-white/5"></div>
                                             <p className="text-white/60 text-sm leading-relaxed font-sans line-clamp-3">
-                                                {story.fullHistory.filter(h => h.startsWith('Story:')).map(h => h.replace('Story:', '')).join(' ')}
+                                                {story.fullHistory
+                                                    .filter(h => !h.startsWith('User Prompt:') && !h.startsWith('Choice:'))
+                                                    .map(h => h.replace(/^Story:\s*/, ''))
+                                                    .join(' ')}
                                             </p>
                                         </div>
                                     </motion.div>

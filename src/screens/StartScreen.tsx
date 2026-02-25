@@ -273,6 +273,7 @@ export default function StartScreen({ onStart }: { onStart: () => void }) {
 
       <HistoryModal isOpen={isHistoryOpen}
         onClose={() => setIsHistoryOpen(false)}
+        onSelect={onStart}
       />
       <ProfileModal
         isOpen={isProfileOpen}

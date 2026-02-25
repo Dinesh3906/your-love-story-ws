@@ -15,10 +15,14 @@ export interface ArchivedStory {
   prompt: string;
   timestamp: number;
   fullHistory: string[];
-  stats: {
-    relationship: number;
-    trust: number;
-  };
+  scenes: Scene[];
+  currentSceneId: string | null;
+  rawNarrative: string;
+  stats: GameState['stats'];
+  userGender: 'male' | 'female';
+  storyLength: 'short' | 'medium' | 'long';
+  characterBindings: Record<string, string>;
+  stateTracker: StateTracker;
 }
 
 export interface User {
@@ -26,11 +30,13 @@ export interface User {
   name: string;
   email: string;
   picture: string;
-  preferences?: {
-    likes: string[];
-    dislikes: string[];
-    description: string;
-  };
+  token?: string;
+}
+
+export interface UserPreferences {
+  likes: string[];
+  dislikes: string[];
+  description: string;
 }
 
 export interface Scene {
@@ -80,7 +86,9 @@ export interface GameState {
   notifications: { id: string; title: string; subtitle: string; icon?: string }[];
   archive: ArchivedStory[];
   user: User | null;
+  preferences: UserPreferences;
   isSyncing: boolean;
+  currentStoryId: string | null;
 
   setScenes: (scenes: Scene[]) => void;
   setCharacters: (chars: Character[]) => void;
@@ -104,8 +112,9 @@ export interface GameState {
   resetGame: () => void;
   archiveCurrentStory: () => void;
   setUser: (user: User | null) => void;
-  updateUserPreferences: (prefs: User['preferences']) => void;
+  updateUserPreferences: (prefs: Partial<UserPreferences>) => void;
   syncWithCloud: () => Promise<void>;
+  resumeStory: (storyId: string) => void;
 }
 
 const initialState = {
@@ -131,7 +140,9 @@ const initialState = {
   },
   notifications: [],
   user: null,
+  preferences: { likes: [], dislikes: [], description: '' },
   isSyncing: false,
+  currentStoryId: null,
 };
 
 export const useGameStore = create<GameState>()(
@@ -211,34 +222,70 @@ export const useGameStore = create<GameState>()(
       resetGame: () => set((s) => ({ ...initialState, archive: s.archive })),
       archiveCurrentStory: () => {
         const state = get();
-        if (state.history.length === 0) return;
+        if (state.history.length === 0 && state.scenes.length === 0) return;
+
+        let currentStoryId = state.currentStoryId;
+        if (!currentStoryId) {
+          currentStoryId = Math.random().toString(36).substr(2, 9);
+          set({ currentStoryId });
+        }
 
         const newArchive: ArchivedStory = {
-          id: Math.random().toString(36).substr(2, 9),
+          id: currentStoryId,
           prompt: state.userPrompt,
           timestamp: Date.now(),
           fullHistory: state.history,
-          stats: {
-            relationship: state.stats.relationship,
-            trust: state.stats.trust
-          }
+          scenes: state.scenes,
+          currentSceneId: state.currentSceneId,
+          rawNarrative: state.rawNarrative,
+          stats: state.stats,
+          userGender: state.userGender,
+          storyLength: state.storyLength,
+          characterBindings: state.characterBindings,
+          stateTracker: state.stateTracker
         };
 
-        set((s) => ({
-          archive: [newArchive, ...s.archive]
-        }));
+        set((s) => {
+          const existingIndex = s.archive.findIndex(a => a.id === currentStoryId);
+          let newArchiveList = [...s.archive];
+          if (existingIndex >= 0) {
+            newArchiveList[existingIndex] = newArchive;
+          } else {
+            newArchiveList = [newArchive, ...newArchiveList];
+          }
+          return { archive: newArchiveList };
+        });
         get().syncWithCloud();
+      },
+      resumeStory: (storyId) => {
+        const { archive } = get();
+        const story = archive.find(s => s.id === storyId);
+        if (!story) return;
+
+        set({
+          currentStoryId: story.id,
+          userPrompt: story.prompt,
+          history: story.fullHistory,
+          scenes: story.scenes,
+          currentSceneId: story.currentSceneId,
+          rawNarrative: story.rawNarrative,
+          stats: story.stats,
+          userGender: story.userGender,
+          storyLength: story.storyLength,
+          characterBindings: story.characterBindings,
+          stateTracker: story.stateTracker
+        });
       },
       setUser: (user) => {
         set({ user });
         if (user) get().syncWithCloud();
       },
-      updateUserPreferences: (preferences) => set((s) => ({
-        user: s.user ? { ...s.user, preferences } : null
+      updateUserPreferences: (prefs) => set((s) => ({
+        preferences: { ...s.preferences, ...prefs }
       })),
       syncWithCloud: async () => {
         const { user, archive } = get();
-        if (!user || archive.length === 0) return;
+        if (!user) return;
 
         set({ isSyncing: true });
         try {
@@ -290,6 +337,8 @@ export const useGameStore = create<GameState>()(
         characterBindings: state.characterBindings,
         archive: state.archive,
         user: state.user,
+        preferences: state.preferences,
+        currentStoryId: state.currentStoryId,
       }),
     }
   )

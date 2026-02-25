@@ -159,8 +159,15 @@ THEN: Present 2-4 NEW options (Max 10 words each).
     }
     user_input_section += `\nREMINDER: The player is ${request.user_gender}. Maintain this perspective.`;
 
-    if (request.user_preferences?.description) {
-        user_input_section += `\n\n[USER PERSONALITY & PREFERENCES]\n${request.user_preferences.description}\nIMPORTANT: Involve these likes and dislikes naturally in the story. Refract them through the world and the NPC's interactions with the player.`;
+    if (request.user_preferences) {
+        const { likes, dislikes, description } = request.user_preferences;
+        if (likes.length > 0 || dislikes.length > 0 || description) {
+            user_input_section += `\n\n[USER PERSONALITY & SOUL PREFERENCES]`;
+            if (likes.length > 0) user_input_section += `\nLIKES: ${likes.join(', ')}`;
+            if (dislikes.length > 0) user_input_section += `\nDISLIKES: ${dislikes.join(', ')}`;
+            if (description) user_input_section += `\nBIO: ${description}`;
+            user_input_section += `\nIMPORTANT: Use these traits to weave a story that feels personal. Characters should notice what the player likes/hates.`;
+        }
     }
 
     if (request.system_override) {

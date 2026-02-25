@@ -19,7 +19,7 @@ export interface Scene {
 export const SceneBuilder = {
   buildScenes: async (userPrompt: string, history: string[] = [], chosenOption: Choice | null = null): Promise<Scene[]> => {
     try {
-      const { setRawNarrative, setStats, userGender, getCurrentScene, stats, stateTracker, updateStateTracker, user } = useGameStore.getState();
+      const { setRawNarrative, setStats, userGender, getCurrentScene, stats, stateTracker, updateStateTracker, user, preferences } = useGameStore.getState();
       const currentScene = getCurrentScene();
       const currentLocation = currentScene?.location === 'The Mist' ? undefined : currentScene?.location;
 
@@ -92,7 +92,7 @@ export const SceneBuilder = {
               },
               indicators: indicators,
               story_length: useGameStore.getState().storyLength,
-              user_preferences: user?.preferences,
+              user_preferences: preferences,
               chosen_option: chosenOption ? {
                 id: chosenOption.id,
                 text: chosenOption.text,
@@ -147,10 +147,12 @@ export const SceneBuilder = {
         let speaker = 'Narrator';
         let dialogue = p.trim();
         const speakerMatch = dialogue.match(/^([^:\n]+):\s*([\s\S]+)$/);
-
         if (speakerMatch) {
-          speaker = speakerMatch[1];
-          dialogue = speakerMatch[2];
+          const matchedSpeaker = speakerMatch[1];
+          if (matchedSpeaker.length <= 25) {
+            speaker = matchedSpeaker;
+            dialogue = speakerMatch[2];
+          }
         }
 
         // Logical Location Update:

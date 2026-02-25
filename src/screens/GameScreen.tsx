@@ -5,6 +5,7 @@ import { useGameStore } from '../store/gameStore';
 import DialogueBox from '../components/DialogueBox';
 import ChoiceButtons from '../components/ChoiceButtons';
 import ProfileModal from '../components/ProfileModal';
+import HistoryModal from '../components/HistoryModal';
 
 import { SceneBuilder } from '../lib/engines/SceneBuilder';
 import { BranchEngine, Choice } from '../lib/engines/BranchEngine';
@@ -93,6 +94,8 @@ export default function GameScreen({ onGameOver }: { onGameOver: () => void }) {
           const fullStory = generatedScenes.map(s => `${s.speaker}: ${s.dialogue}`).join("\n");
           addToHistory(`Story: ${fullStory}`);
         }
+        // Save to archive immediately after initial scenes are built
+        useGameStore.getState().archiveCurrentStory();
       } catch (error) {
         console.error("Initialization failed:", error);
       } finally {
@@ -133,6 +136,7 @@ export default function GameScreen({ onGameOver }: { onGameOver: () => void }) {
   const [lastChoice, setLastChoice] = useState<Choice | null>(null);
   const [customInput, setCustomInput] = useState('');
   const [isInputOpen, setIsInputOpen] = useState(false);
+  const [isHistoryOpen, setIsHistoryOpen] = useState(false);
 
   const handleCustomSubmit = () => {
     if (!customInput.trim()) return;
@@ -201,8 +205,11 @@ export default function GameScreen({ onGameOver }: { onGameOver: () => void }) {
       // ONLY add to history if it's NOT a fallback scene
       if (nextScenes[0].id !== 'fallback_mist_scene') {
         const fullStory = nextScenes.map(s => `${s.speaker}: ${s.dialogue}`).join("\n");
-        addToHistory(`Story: ${fullStory}`);
+        addToHistory(fullStory);
       }
+
+      // Continuous Archiving
+      useGameStore.getState().archiveCurrentStory();
     } catch (error) {
       console.error("Failed to continue story:", error);
       onGameOver();
@@ -244,49 +251,60 @@ export default function GameScreen({ onGameOver }: { onGameOver: () => void }) {
       <CherryPetalSystem />
 
       {/* Cinematic HUD (Top) */}
-      <div className='absolute top-0 left-0 right-0 z-40 px-3 py-3 sm:px-6 sm:py-6 lg:px-16 lg:py-10 flex flex-row justify-between items-start gap-2 sm:gap-6 pointer-events-none pt-safe'>
+      <div className='absolute top-0 left-0 right-0 z-40 px-3 py-3 sm:px-6 sm:py-6 lg:px-16 lg:py-10 flex flex-row items-start justify-between gap-2 pointer-events-none pt-safe'>
         <motion.div
           initial={{ opacity: 0, x: -50 }}
           animate={{ opacity: 1, x: 0 }}
-          className='flex gap-4'
+          className='flex flex-col sm:flex-row items-start gap-2 sm:gap-4'
         >
-          <button
-            onClick={() => setIsProfileOpen(true)}
-            className='glass-morphism p-3 sm:p-4 rounded-full border-white/5 pointer-events-auto text-white/60 hover:text-white transition-colors cursor-pointer group'
-          >
-            {user ? (
-              <img src={user.picture} alt="Profile" className="w-5 h-5 rounded-full" />
-            ) : (
+          <div className='flex gap-2 pointer-events-auto'>
+            <button
+              onClick={() => setIsProfileOpen(true)}
+              className='glass-morphism p-2.5 sm:p-4 rounded-full border-white/5 text-white/60 hover:text-white transition-colors cursor-pointer group'
+            >
+              {user ? (
+                <img src={user.picture} alt="Profile" className="w-5 h-5 rounded-full" />
+              ) : (
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 group-hover:scale-110 transition-transform">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+                </svg>
+              )}
+            </button>
+
+            <button
+              onClick={() => {
+                if (window.confirm("Return to main menu? Your current progress is saved.")) {
+                  onGameOver();
+                }
+              }}
+              className='glass-morphism p-2.5 sm:p-4 rounded-full border-white/5 text-white/60 hover:text-white transition-colors cursor-pointer group'
+            >
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 group-hover:scale-110 transition-transform">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+                <path strokeLinecap="round" strokeLinejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
               </svg>
-            )}
-          </button>
+            </button>
 
-          {/* Home Button */}
-          <button
-            onClick={() => {
-              if (window.confirm("Return to main menu? Your current progress is saved.")) {
-                window.location.reload(); // Simplest way to go back to start state with persistence
-              }
-            }}
-            className='glass-morphism p-3 sm:p-4 rounded-full border-white/5 pointer-events-auto text-white/60 hover:text-white transition-colors cursor-pointer group'
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 group-hover:scale-110 transition-transform">
-              <path strokeLinecap="round" strokeLinejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
-            </svg>
-          </button>
+            <button
+              onClick={() => setIsHistoryOpen(true)}
+              className='glass-morphism p-2.5 sm:p-4 rounded-full border-white/5 text-white/60 hover:text-white transition-colors cursor-pointer group'
+              title="Story Archive"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 group-hover:scale-110 transition-transform">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18c-2.305 0-4.408.867-6 2.292m0-14.25v14.25" />
+              </svg>
+            </button>
+          </div>
 
-          {/* Relationship Stats */}
-          <div className='glass-morphism px-3 py-2 sm:px-8 sm:py-4 rounded-[16px] sm:rounded-[24px] flex items-center gap-3 sm:gap-8 border-white/5 pointer-events-auto'>
+          {/* Relationship Stats - More compact for mobile */}
+          <div className='glass-morphism px-3 py-2 sm:px-6 sm:py-3 rounded-[16px] sm:rounded-[20px] flex items-center gap-3 sm:gap-6 border-white/5 pointer-events-auto'>
             <div className='flex flex-col'>
-              <span className='text-[7px] sm:text-[10px] uppercase tracking-[0.3em] text-cherry-blossom font-black'>Relationship</span>
-              <span className='text-sm sm:text-2xl font-serif text-white uppercase leading-tight'>{stats.relationship}%</span>
+              <span className='text-[6px] sm:text-[9px] uppercase tracking-[0.2em] text-cherry-blossom font-black opacity-70'>Rel</span>
+              <span className='text-xs sm:text-xl font-serif text-white uppercase leading-tight'>{stats.relationship}%</span>
             </div>
-            <div className='w-[1px] h-6 sm:h-10 bg-white/10'></div>
+            <div className='w-[1px] h-5 sm:h-8 bg-white/10'></div>
             <div className='flex flex-col'>
-              <span className='text-[7px] sm:text-[10px] uppercase tracking-[0.3em] text-soft-lavender font-black'>Trust</span>
-              <span className='text-sm sm:text-2xl font-serif text-white uppercase leading-tight'>{stats.trust}%</span>
+              <span className='text-[6px] sm:text-[9px] uppercase tracking-[0.2em] text-soft-lavender font-black opacity-70'>Trust</span>
+              <span className='text-xs sm:text-xl font-serif text-white uppercase leading-tight'>{stats.trust}%</span>
             </div>
           </div>
         </motion.div>
@@ -294,28 +312,25 @@ export default function GameScreen({ onGameOver }: { onGameOver: () => void }) {
         <motion.div
           initial={{ opacity: 0, x: 50 }}
           animate={{ opacity: 1, x: 0 }}
-          className='flex flex-col items-end gap-3 pointer-events-auto'
+          className='flex flex-col items-end gap-3 pointer-events-none'
         >
-          <div className='text-right'>
+          <div className='text-right pointer-events-auto'>
             <div className='text-[7px] sm:text-[11px] uppercase tracking-[0.4em] text-white/50 mb-0.5 sm:mb-1'>Location</div>
-            <div className='text-xs sm:text-xl xl:text-2xl text-white font-serif italic text-glow-romantic font-light leading-tight'>{currentScene.location || 'Spring Echoes'}</div>
+            <div className='text-xs sm:text-lg xl:text-xl text-white font-serif italic text-glow-romantic font-light leading-tight'>{currentScene.location || 'Spring Echoes'}</div>
           </div>
-          <div className='w-32 sm:w-48 xl:w-56 h-[1px] sm:h-[2px] bg-white/10 rounded-full overflow-hidden shadow-[0_0_10px_rgba(255,183,197,0.1)]'>
-            <motion.div
-              className='h-full bg-gradient-to-r from-cherry-blossom to-soft-lavender shadow-[0_0_20px_rgba(255,183,197,0.4)]'
-              animate={{ width: `${stats.tension}%` }}
-              transition={{ duration: 1.5 }}
-            />
-          </div>
-          <div className='text-[8px] sm:text-[10px] uppercase tracking-[0.3em] text-white/40 mr-1'>Tension</div>
-        </motion.div>
 
-        {/* Vulnerable Mode Toggle */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="absolute top-[80px] sm:top-[120px] right-3 sm:right-6 lg:right-16 pointer-events-auto"
-        >
+          <div className='flex flex-col items-end gap-1.5'>
+            <div className='w-24 sm:w-32 xl:w-40 h-[1.5px] bg-white/10 rounded-full overflow-hidden shadow-[0_0_10px_rgba(255,183,197,0.1)]'>
+              <motion.div
+                className='h-full bg-gradient-to-r from-cherry-blossom to-soft-lavender shadow-[0_0_20px_rgba(255,183,197,0.4)]'
+                animate={{ width: `${stats.tension}%` }}
+                transition={{ duration: 1.5 }}
+              />
+            </div>
+            <div className='text-[7px] sm:text-[9px] uppercase tracking-[0.3em] text-white/40 mr-1'>Tension</div>
+          </div>
+
+          {/* Vulnerable Mode Toggle - Moved into Flow */}
           <button
             onClick={() => {
               const current = stats.vulnerable;
@@ -324,12 +339,13 @@ export default function GameScreen({ onGameOver }: { onGameOver: () => void }) {
                 useGameStore.getState().addNotification("VULNERABLE MODE", "The wall around her heart has crumbled.");
               }
             }}
-            className={`px-4 py-2 rounded-full border text-[8px] sm:text-[10px] uppercase tracking-[0.2em] transition-all duration-500 flex items-center gap-2 ${stats.vulnerable ? 'bg-cherry-blossom/20 border-cherry-blossom text-cherry-blossom shadow-[0_0_15px_rgba(255,183,197,0.3)]' : 'bg-black/20 border-white/10 text-white/40 hover:text-white/60'}`}
+            className={`pointer-events-auto px-3 py-1.5 rounded-full border text-[7px] sm:text-[9px] uppercase tracking-[0.2em] transition-all duration-500 flex items-center gap-1.5 ${stats.vulnerable ? 'bg-cherry-blossom/20 border-cherry-blossom text-cherry-blossom shadow-[0_0_15px_rgba(255,183,197,0.3)]' : 'bg-black/20 border-white/10 text-white/40 hover:text-white/60'}`}
           >
-            <div className={`w-1.5 h-1.5 rounded-full ${stats.vulnerable ? 'bg-cherry-blossom animate-pulse' : 'bg-white/20'}`}></div>
-            Vulnerable Mode
+            <div className={`w-1 h-1 rounded-full ${stats.vulnerable ? 'bg-cherry-blossom animate-pulse' : 'bg-white/20'}`}></div>
+            Vulnerable
           </button>
         </motion.div>
+
       </div>
 
       {/* Dynamic Scene Background */}
@@ -460,6 +476,19 @@ export default function GameScreen({ onGameOver }: { onGameOver: () => void }) {
       <ProfileModal
         isOpen={isProfileOpen}
         onClose={() => setIsProfileOpen(false)}
+      />
+      <HistoryModal
+        isOpen={isHistoryOpen}
+        onClose={() => setIsHistoryOpen(false)}
+        onSelect={() => {
+          // Reset scene index to the end of the resumed story or specific point?
+          // The resumeStory action in store already updates currentSceneId and scenes.
+          // We should reset the local sceneIndex to match the state.
+          const resumeIndex = useGameStore.getState().scenes.length - 1;
+          setSceneIndex(resumeIndex >= 0 ? resumeIndex : 0);
+          setShowChoices(false);
+          setIsLoading(false);
+        }}
       />
     </div>
   );

@@ -24,8 +24,26 @@ export default {
 
         if (request.url.endsWith("/sync") && request.method === "POST") {
             try {
-                const { userId, archive } = await request.json() as any;
+                const { userId, archive, token } = await request.json() as any;
                 if (!userId) throw new Error("Missing userId");
+
+                // Basic Token Verification (Audience Check)
+                if (token) {
+                    try {
+                        const parts = token.split('.');
+                        const payload = JSON.parse(atob(parts[1]));
+                        // Basic sanity check
+                        if (payload.iss !== "https://accounts.google.com" && payload.iss !== "accounts.google.com") {
+                            throw new Error("Invalid issuer");
+                        }
+                        if (payload.sub !== userId) {
+                            throw new Error("User ID mismatch");
+                        }
+                    } catch (e) {
+                        console.error("Token verification failed:", e);
+                        throw new Error("Unauthorized: Invalid Token");
+                    }
+                }
 
                 // Get existing archive from KV
                 const kvKey = `user:${userId}:archive`;
