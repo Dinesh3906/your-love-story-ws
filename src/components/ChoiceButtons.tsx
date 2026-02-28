@@ -34,13 +34,13 @@ export default memo(function ChoiceButtons({ choices, onChoiceSelect }: Props) {
                     whileHover={{ scale: 1.01, x: 5, backgroundColor: 'rgba(255, 183, 197, 0.15)' }}
                     whileTap={{ scale: 0.99 }}
                     onClick={() => onChoiceSelect(choice)}
-                    className="group relative w-full text-left glass-morphism p-2.5 sm:p-4 lg:p-5 rounded-[16px] sm:rounded-[24px] border border-white/10 overflow-hidden transition-all duration-300 bg-cherry-blossom/5"
+                    className="group relative w-full text-left glass-morphism p-3 sm:p-4 lg:p-5 rounded-[16px] sm:rounded-[24px] border border-white/10 overflow-hidden transition-all duration-300 bg-cherry-blossom/5"
                 >
                     <div className="absolute inset-0 bg-gradient-to-r from-cherry-blossom/0 via-cherry-blossom/10 to-cherry-blossom/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
 
-                    <div className="flex items-center gap-3 sm:gap-6 relative z-10">
-                        <span className="text-cherry-blossom font-serif text-base sm:text-xl opacity-80 group-hover:opacity-100 group-hover:rotate-12 transition-all duration-300">✧</span>
-                        <span className="flex-1 text-white/95 text-xs sm:text-sm lg:text-lg font-serif tracking-wide italic">
+                    <div className="flex items-center gap-2.5 sm:gap-6 relative z-10">
+                        <span className="text-cherry-blossom font-serif text-sm sm:text-xl opacity-80 group-hover:opacity-100 group-hover:rotate-12 transition-all duration-300 shrink-0">✧</span>
+                        <span className="flex-1 text-white/95 text-[11px] sm:text-sm lg:text-lg font-serif tracking-wide italic leading-snug">
                             {choice.text}
                         </span>
                     </div>

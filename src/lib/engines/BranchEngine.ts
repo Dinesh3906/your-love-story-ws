@@ -4,6 +4,7 @@ export interface Effects {
 }
 
 import { useGameStore } from "../../store/gameStore";
+import { censorText } from "../utils/CensorUtils";
 
 export interface Choice {
   id: string;
@@ -57,7 +58,7 @@ export const BranchEngine = {
 
           return {
             id: opt.id || `choice_${Date.now()}_${index}`,
-            text: text,
+            text: censorText(text),
             intent: intent,
             effects
           };

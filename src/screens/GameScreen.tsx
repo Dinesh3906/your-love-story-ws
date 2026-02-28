@@ -61,7 +61,7 @@ const CherryPetalSystem = memo(() => {
 });
 
 export default function GameScreen({ onGameOver }: { onGameOver: () => void }) {
-  const { stats, scenes, setScenes, getCurrentScene, setCurrentScene, updateStats, setStats, userPrompt, history, addToHistory, user } = useGameStore();
+  const { stats, scenes, setScenes, getCurrentScene, setCurrentScene, updateStats, setStats, userPrompt, history, addToHistory } = useGameStore();
   const [showChoices, setShowChoices] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [choices, setChoices] = useState<Choice[]>([]);
@@ -251,7 +251,7 @@ export default function GameScreen({ onGameOver }: { onGameOver: () => void }) {
       <CherryPetalSystem />
 
       {/* Cinematic HUD (Top) */}
-      <div className='absolute top-0 left-0 right-0 z-40 px-3 py-3 sm:px-6 sm:py-6 lg:px-16 lg:py-10 flex flex-row items-start justify-between gap-2 pointer-events-none pt-safe'>
+      <div className='absolute top-0 left-0 right-0 z-40 px-3 py-1.5 sm:px-6 sm:py-6 lg:px-16 lg:py-10 flex flex-row items-start justify-between gap-1 sm:gap-2 pointer-events-none pt-safe'>
         <motion.div
           initial={{ opacity: 0, x: -50 }}
           animate={{ opacity: 1, x: 0 }}
@@ -262,13 +262,9 @@ export default function GameScreen({ onGameOver }: { onGameOver: () => void }) {
               onClick={() => setIsProfileOpen(true)}
               className='glass-morphism p-2.5 sm:p-4 rounded-full border-white/5 text-white/60 hover:text-white transition-colors cursor-pointer group'
             >
-              {user ? (
-                <img src={user.picture} alt="Profile" className="w-5 h-5 rounded-full" />
-              ) : (
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 group-hover:scale-110 transition-transform">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
-                </svg>
-              )}
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 group-hover:scale-110 transition-transform">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+              </svg>
             </button>
 
             <button
@@ -296,12 +292,12 @@ export default function GameScreen({ onGameOver }: { onGameOver: () => void }) {
           </div>
 
           {/* Relationship Stats - More compact for mobile */}
-          <div className='glass-morphism px-3 py-2 sm:px-6 sm:py-3 rounded-[16px] sm:rounded-[20px] flex items-center gap-3 sm:gap-6 border-white/5 pointer-events-auto'>
+          <div className='glass-morphism px-2 py-1.5 sm:px-6 sm:py-3 rounded-[12px] sm:rounded-[20px] flex items-center gap-2 sm:gap-6 border-white/5 pointer-events-auto'>
             <div className='flex flex-col'>
               <span className='text-[6px] sm:text-[9px] uppercase tracking-[0.2em] text-cherry-blossom font-black opacity-70'>Rel</span>
               <span className='text-xs sm:text-xl font-serif text-white uppercase leading-tight'>{stats.relationship}%</span>
             </div>
-            <div className='w-[1px] h-5 sm:h-8 bg-white/10'></div>
+            <div className='w-[1px] h-4 sm:h-8 bg-white/10'></div>
             <div className='flex flex-col'>
               <span className='text-[6px] sm:text-[9px] uppercase tracking-[0.2em] text-soft-lavender font-black opacity-70'>Trust</span>
               <span className='text-xs sm:text-xl font-serif text-white uppercase leading-tight'>{stats.trust}%</span>
@@ -373,15 +369,15 @@ export default function GameScreen({ onGameOver }: { onGameOver: () => void }) {
           <motion.div
             key={currentScene.characterImage}
             initial={{ opacity: 0, x: -80, scale: 0.9, rotateY: 10 }}
-            animate={{ opacity: 1, x: 100, scale: 1, rotateY: 0 }}
+            animate={{ opacity: 1, x: 0, scale: 1, rotateY: 0 }}
             exit={{ opacity: 0, x: 150, scale: 1.1 }}
             transition={{ duration: 1.8, ease: "easeOut" }}
-            className='absolute left-0 bottom-0 z-20 w-full h-[95%] flex justify-start items-end pointer-events-none'
+            className='absolute left-0 bottom-0 z-20 w-full h-[80%] sm:h-[95%] flex justify-start items-end pointer-events-none'
           >
             <img
               src={currentScene.characterImage}
               alt="Character"
-              className="h-[90%] lg:h-full object-contain object-bottom drop-shadow-[0_0_60px_rgba(0,0,0,0.9)] filter brightness-95 contrast-105"
+              className="h-full object-contain object-bottom drop-shadow-[0_0_60px_rgba(0,0,0,0.9)] filter brightness-95 contrast-105"
             />
           </motion.div>
         )}
@@ -392,7 +388,7 @@ export default function GameScreen({ onGameOver }: { onGameOver: () => void }) {
       <div className='absolute inset-0 z-10 pointer-events-none noise-overlay opacity-5'></div>
 
       {/* Story Narrative Layer */}
-      <div className='flex-1 flex flex-col justify-center sm:justify-end pt-12 md:pt-20 lg:pt-24 xl:pt-32 pb-12 sm:pb-8 px-4 sm:px-10 lg:px-20 relative z-30 depth-container'>
+      <div className='flex-1 flex flex-col justify-center sm:justify-end pt-12 md:pt-20 lg:pt-24 xl:pt-32 pb-20 sm:pb-8 px-4 sm:px-10 lg:px-20 relative z-30 depth-container'>
         <div className='w-full max-w-[1100px] xl:max-w-[1400px] mx-auto'>
           {!showChoices ? (
             <DialogueBox
@@ -465,9 +461,9 @@ export default function GameScreen({ onGameOver }: { onGameOver: () => void }) {
             animate={{ opacity: 0.5 }}
             whileHover={{ opacity: 1, scale: 1.1 }}
             onClick={handlePrevious}
-            className="fixed bottom-8 left-8 z-50 p-4 rounded-full bg-white/5 border border-white/10 backdrop-blur-md text-white/60 hover:text-white transition-all group"
+            className="fixed bottom-4 left-4 sm:bottom-8 sm:left-8 z-50 p-3 sm:p-4 rounded-full bg-white/5 border border-white/10 backdrop-blur-md text-white/60 hover:text-white transition-all group"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 group-hover:-translate-x-1 transition-transform">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 sm:w-6 sm:h-6 group-hover:-translate-x-1 transition-transform">
               <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
             </svg>
           </motion.button>

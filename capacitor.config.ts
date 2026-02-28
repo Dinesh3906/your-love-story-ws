@@ -9,6 +9,10 @@ const config: CapacitorConfig = {
       androidAppId: 'ca-app-pub-5173875521561209~9130663095',
     },
   },
+  server: {
+    url: 'http://172.50.3.240:3000',
+    cleartext: true,
+  },
 };
 
 export default config;

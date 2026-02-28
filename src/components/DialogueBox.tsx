@@ -41,7 +41,7 @@ export default memo(function DialogueBox({ speaker, text, onComplete }: Props) {
       initial={{ opacity: 0, y: 50, rotateX: 5 }}
       animate={{ opacity: 1, y: 0, rotateX: 0 }}
       transition={{ duration: 1.2, ease: "easeOut" }}
-      className="glass-morphism rounded-[24px] sm:rounded-[32px] md:rounded-[40px] lg:rounded-[48px] p-5 sm:p-7 md:p-8 lg:p-10 xl:p-12 shadow-2xl relative z-10 neon-border"
+      className="glass-morphism rounded-[24px] sm:rounded-[32px] md:rounded-[40px] lg:rounded-[48px] p-4 sm:p-7 md:p-8 lg:p-10 xl:p-12 shadow-2xl relative z-10 neon-border w-full"
     >
       {/* Soft Cherry Glow Backdrop */}
       <div className='absolute -bottom-32 -right-32 w-80 h-80 bg-cherry-blossom/5 rounded-full blur-[100px] pointer-events-none'></div>
@@ -53,21 +53,21 @@ export default memo(function DialogueBox({ speaker, text, onComplete }: Props) {
             initial={{ opacity: 0, scale: 0.8, x: -20, rotateZ: -2 }}
             animate={{ opacity: 1, scale: 1, x: 0, rotateZ: 0 }}
             exit={{ opacity: 0, scale: 1.2, x: 20, rotateZ: 2 }}
-            className="absolute -top-6 sm:-top-10 left-6 sm:left-14 py-2 sm:py-4 px-6 sm:px-12 bg-gradient-to-r from-cherry-blossom via-cherry-light to-cherry-blossom bg-[length:200%_auto] rounded-full z-40 shadow-2xl shadow-cherry-blossom/40 border border-white/10 max-w-[80%] overflow-hidden"
+            className="absolute -top-5 sm:-top-10 left-5 sm:left-14 py-1.5 sm:py-4 px-5 sm:px-12 bg-gradient-to-r from-cherry-blossom via-cherry-light to-cherry-blossom bg-[length:200%_auto] rounded-full z-40 shadow-2xl shadow-cherry-blossom/40 border border-white/10 max-w-[85%] overflow-hidden"
             style={{ animation: 'backgroundShift 6s linear infinite' }}
           >
-            <span className="text-[9px] sm:text-[11px] font-black uppercase tracking-[0.5em] text-midnight text-shadow-sm truncate block">
+            <span className="text-[8px] sm:text-[11px] font-black uppercase tracking-[0.4em] text-midnight text-shadow-sm truncate block">
               {speaker}
             </span>
           </motion.div>
         )}
       </AnimatePresence>
 
-      <div className="relative pt-6 sm:pt-8 md:pt-10">
-        <div className="min-h-[100px] sm:min-h-[140px] lg:min-h-[180px] max-h-[35vh] overflow-y-auto custom-scrollbar pr-2 sm:pr-8 mb-4 sm:mb-6">
-          <p className="text-white/95 text-[18px] sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl font-serif leading-[1.6] md:leading-[1.6] tracking-wide selection:bg-cherry-blossom/30 italic font-light sm:drop-shadow-sm text-center sm:text-left">
+      <div className="relative pt-4 sm:pt-8 md:pt-10">
+        <div className="min-h-[80px] sm:min-h-[140px] lg:min-h-[180px] max-h-[30vh] overflow-y-auto custom-scrollbar pr-1 sm:pr-8 mb-2 sm:mb-6">
+          <p className="text-white/95 text-[16px] sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl font-serif leading-[1.5] md:leading-[1.6] tracking-wide selection:bg-cherry-blossom/30 italic font-light sm:drop-shadow-sm text-center sm:text-left">
             {displayText}
-            {isTyping && <motion.span animate={{ opacity: [0, 1, 0], scale: [1, 1.2, 1] }} transition={{ repeat: Infinity, duration: 1 }} className="inline-block w-2 sm:w-3 h-6 sm:h-10 bg-cherry-blossom ml-2 sm:ml-4 align-middle" />}
+            {isTyping && <motion.span animate={{ opacity: [0, 1, 0], scale: [1, 1.2, 1] }} transition={{ repeat: Infinity, duration: 1 }} className="inline-block w-1.5 sm:w-3 h-5 sm:h-10 bg-cherry-blossom ml-1.5 sm:ml-4 align-middle" />}
           </p>
         </div>
       </div>

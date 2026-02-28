@@ -1,5 +1,6 @@
 import { useGameStore } from "../../store/gameStore";
 import { Choice } from "./BranchEngine";
+import { censorText } from "../utils/CensorUtils";
 
 export interface Scene {
   id: string;
@@ -19,7 +20,7 @@ export interface Scene {
 export const SceneBuilder = {
   buildScenes: async (userPrompt: string, history: string[] = [], chosenOption: Choice | null = null): Promise<Scene[]> => {
     try {
-      const { setRawNarrative, setStats, userGender, getCurrentScene, stats, stateTracker, updateStateTracker, user, preferences } = useGameStore.getState();
+      const { setRawNarrative, setStats, userGender, getCurrentScene, stats, stateTracker, updateStateTracker, preferences } = useGameStore.getState();
       const currentScene = getCurrentScene();
       const currentLocation = currentScene?.location === 'The Mist' ? undefined : currentScene?.location;
 
@@ -167,7 +168,7 @@ export const SceneBuilder = {
           id: `scene_${Date.now()}_${index}`,
           title: currentParagraphLocation || 'Ongoing Story',
           summary: data.mood || 'Interactive Adventure',
-          dialogue: dialogue,
+          dialogue: censorText(dialogue),
           backgroundImage: undefined,
           characterImage: undefined,
           speaker: speaker,

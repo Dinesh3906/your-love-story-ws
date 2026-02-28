@@ -25,14 +25,6 @@ export interface ArchivedStory {
   stateTracker: StateTracker;
 }
 
-export interface User {
-  id: string;
-  name: string;
-  email: string;
-  picture: string;
-  token?: string;
-}
-
 export interface UserPreferences {
   likes: string[];
   dislikes: string[];
@@ -85,9 +77,7 @@ export interface GameState {
   stateTracker: StateTracker;
   notifications: { id: string; title: string; subtitle: string; icon?: string }[];
   archive: ArchivedStory[];
-  user: User | null;
   preferences: UserPreferences;
-  isSyncing: boolean;
   currentStoryId: string | null;
 
   setScenes: (scenes: Scene[]) => void;
@@ -111,10 +101,9 @@ export interface GameState {
   removeNotification: (id: string) => void;
   resetGame: () => void;
   archiveCurrentStory: () => void;
-  setUser: (user: User | null) => void;
   updateUserPreferences: (prefs: Partial<UserPreferences>) => void;
-  syncWithCloud: () => Promise<void>;
   resumeStory: (storyId: string) => void;
+  deleteStory: (storyId: string) => void;
 }
 
 const initialState = {
@@ -139,9 +128,7 @@ const initialState = {
     lastMoods: [],
   },
   notifications: [],
-  user: null,
   preferences: { likes: [], dislikes: [], description: '' },
-  isSyncing: false,
   currentStoryId: null,
 };
 
@@ -219,7 +206,7 @@ export const useGameStore = create<GameState>()(
       removeNotification: (id) => set(s => ({
         notifications: s.notifications.filter(n => n.id !== id)
       })),
-      resetGame: () => set((s) => ({ ...initialState, archive: s.archive })),
+      resetGame: () => set((s) => ({ ...initialState, archive: s.archive, isMusicPlaying: s.isMusicPlaying })),
       archiveCurrentStory: () => {
         const state = get();
         if (state.history.length === 0 && state.scenes.length === 0) return;
@@ -255,7 +242,6 @@ export const useGameStore = create<GameState>()(
           }
           return { archive: newArchiveList };
         });
-        get().syncWithCloud();
       },
       resumeStory: (storyId) => {
         const { archive } = get();
@@ -276,52 +262,12 @@ export const useGameStore = create<GameState>()(
           stateTracker: story.stateTracker
         });
       },
-      setUser: (user) => {
-        set({ user });
-        if (user) get().syncWithCloud();
-      },
+      deleteStory: (storyId) => set((s) => ({
+        archive: s.archive.filter(story => story.id !== storyId)
+      })),
       updateUserPreferences: (prefs) => set((s) => ({
         preferences: { ...s.preferences, ...prefs }
       })),
-      syncWithCloud: async () => {
-        const { user, archive } = get();
-        if (!user) return;
-
-        set({ isSyncing: true });
-        try {
-          const API_URL = import.meta.env.VITE_API_URL;
-          const response = await fetch(`${API_URL}/sync`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              userId: user.id,
-              archive: archive
-            })
-          });
-
-          if (response.ok) {
-            const data = await response.json();
-            if (data.archive) {
-              // Simple merge: cloud archive takes priority for same IDs
-              const localArchive = get().archive;
-              const cloudArchive = data.archive as ArchivedStory[];
-              const merged = [...cloudArchive];
-
-              localArchive.forEach(la => {
-                if (!merged.find(ca => ca.id === la.id)) {
-                  merged.push(la);
-                }
-              });
-
-              set({ archive: merged.sort((a, b) => b.timestamp - a.timestamp) });
-            }
-          }
-        } catch (error) {
-          console.error("Cloud sync failed:", error);
-        } finally {
-          set({ isSyncing: false });
-        }
-      },
     }),
     {
       name: 'your-love-story-storage',
@@ -336,9 +282,9 @@ export const useGameStore = create<GameState>()(
         storyLength: state.storyLength,
         characterBindings: state.characterBindings,
         archive: state.archive,
-        user: state.user,
         preferences: state.preferences,
         currentStoryId: state.currentStoryId,
+        isMusicPlaying: state.isMusicPlaying,
       }),
     }
   )

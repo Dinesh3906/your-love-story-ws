@@ -13,16 +13,16 @@ export default function EndingScreen({ onRestart }: { onRestart: () => void }) {
         initial={{ opacity: 0, scale: 0.8, rotateY: -20 }}
         animate={{ opacity: 1, scale: 1, rotateY: 0 }}
         transition={{ duration: 1.5, ease: "easeOut" }}
-        className='max-w-[600px] w-full glass-morphism p-16 lg:p-24 rounded-[56px] text-center relative z-10 neon-border'
+        className='max-w-[450px] sm:max-w-[600px] w-full glass-morphism p-8 sm:p-16 lg:p-20 rounded-[40px] sm:rounded-[56px] text-center relative z-10 neon-border mx-auto'
       >
         <motion.div
           initial={{ y: 30, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.5 }}
         >
-          <span className='text-[12px] uppercase tracking-[0.6em] text-cherry-blossom font-black mb-10 block'>The Blossom Fades</span>
-          <h2 className='text-8xl xl:text-9xl font-serif text-white mb-4 text-glow-romantic font-light'>{stats.relationship}%</h2>
-          <p className='text-sm uppercase tracking-[0.4em] text-white/30 font-sans mb-16'>Relationship Affinity</p>
+          <span className='text-[10px] sm:text-[12px] uppercase tracking-[0.4em] sm:tracking-[0.6em] text-cherry-blossom font-black mb-6 sm:mb-10 block'>The Blossom Fades</span>
+          <h2 className='text-6xl sm:text-8xl xl:text-9xl font-serif text-white mb-2 sm:mb-4 text-glow-romantic font-light'>{stats.relationship}%</h2>
+          <p className='text-[10px] sm:text-sm uppercase tracking-[0.2em] sm:tracking-[0.4em] text-white/30 font-sans mb-8 sm:mb-16'>Relationship Affinity</p>
 
           <div className='h-[1px] w-24 bg-white/10 mx-auto mb-16 shadow-[0_0_10px_rgba(255,183,197,0.3)]'></div>
 

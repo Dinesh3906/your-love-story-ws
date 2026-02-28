@@ -65,7 +65,7 @@ export default function StartScreen({ onStart }: { onStart: () => void }) {
   const [gender, setGender] = useState<'male' | 'female'>('male');
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
-  const { resetGame, setUserPrompt, setUserGender, scenes, userPrompt, storyLength, setStoryLength, user } = useGameStore();
+  const { resetGame, setUserPrompt, setUserGender, scenes, userPrompt, storyLength, setStoryLength } = useGameStore();
 
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
@@ -138,35 +138,31 @@ export default function StartScreen({ onStart }: { onStart: () => void }) {
         <div className='absolute top-1/2 left-0 -translate-y-1/2 w-[1000px] h-[1000px] bg-cherry-blossom/10 rounded-full blur-[160px] animate-pulse-bloom z-0'></div>
       </div>
 
-      <div className='lg:hidden w-full pt-safe pb-4 text-center relative z-20 px-6'>
-        <h1 className='text-4xl sm:text-6xl md:text-8xl font-serif text-white tracking-widest text-glow-romantic animate-title-shimmer inline-block font-black'>YOUR LOVE STORY</h1>
-        <p className='mt-2 text-[15px] sm:text-lg md:text-2xl text-white/80 font-script'>Only the heart remembers what the mind forgets.</p>
+      <div className='lg:hidden w-full pt-safe pb-2 text-center relative z-20 px-12'>
+        <h1 className='text-3xl sm:text-5xl md:text-7xl font-serif text-white tracking-widest text-glow-romantic animate-title-shimmer inline-block font-black'>YOUR LOVE STORY</h1>
+        <p className='mt-1 text-sm sm:text-lg md:text-xl text-white/80 font-script'>Only the heart remembers what the mind forgets.</p>
       </div>
 
       {/* Top Left Profile Button */}
-      <div className="absolute top-6 left-6 z-50 pt-safe">
+      <div className="absolute top-4 left-4 sm:top-6 sm:left-6 z-50 pt-safe">
         <button
           onClick={() => setIsProfileOpen(true)}
-          className='glass-morphism p-3 sm:p-4 rounded-full border-white/5 pointer-events-auto text-white/60 hover:text-white transition-colors cursor-pointer group flex items-center justify-center'
+          className='glass-morphism p-2.5 sm:p-4 rounded-full border-white/5 pointer-events-auto text-white/60 hover:text-white transition-colors cursor-pointer group flex items-center justify-center'
         >
-          {user ? (
-            <img src={user.picture} alt="Profile" className="w-6 h-6 rounded-full" />
-          ) : (
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 group-hover:scale-110 transition-transform">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
-            </svg>
-          )}
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 sm:w-6 sm:h-6 group-hover:scale-110 transition-transform">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+          </svg>
         </button>
       </div>
 
       {/* RIGHT SIDE: Interactive glassmorphism card (40%) */}
-      <div className='flex-1 flex items-center justify-center p-4 sm:p-8 lg:p-12 xl:p-24 relative z-30 depth-container'>
+      <div className='flex-1 flex items-center justify-center p-4 sm:p-8 lg:p-12 xl:p-24 relative z-30 depth-container overflow-y-auto custom-scrollbar'>
         <motion.div
           style={{ rotateX, rotateY, perspective: 1500, translateZ: 100 }}
           initial={{ opacity: 0, y: 100, scale: 0.9 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           transition={{ duration: 1.5, delay: 0.8, type: 'spring' }}
-          className='w-full max-w-[560px] lg:max-w-[500px] xl:max-w-[600px] glass-morphism p-6 sm:p-10 md:p-12 lg:p-14 rounded-[32px] sm:rounded-[40px] neon-border animate-float relative overflow-hidden group'
+          className='w-full max-w-[560px] lg:max-w-[500px] xl:max-w-[600px] glass-morphism p-5 sm:p-8 md:p-10 lg:p-12 rounded-[28px] sm:rounded-[40px] neon-border animate-float relative overflow-hidden group my-auto'
         >
           {/* Internal Bloom for the card */}
           <div className='absolute -top-32 -right-32 w-64 h-64 bg-cherry-blossom/5 rounded-full blur-[70px] group-hover:bg-cherry-blossom/15 transition-all duration-1000'></div>
@@ -179,7 +175,7 @@ export default function StartScreen({ onStart }: { onStart: () => void }) {
               </div>
               <div className='relative'>
                 <textarea
-                  className='w-full h-48 sm:h-64 lg:h-72 p-7 sm:p-8 rounded-[24px] sm:rounded-[28px] lg:rounded-[24px] bg-black/50 border border-white/40 outline-none transition-all resize-none font-sans text-[17px] sm:text-lg text-white/90 placeholder-white/40 focus:border-cherry-blossom/20 focus:ring-1 focus:ring-cherry-blossom/5 custom-scrollbar leading-relaxed'
+                  className='w-full h-32 sm:h-48 lg:h-56 p-5 sm:p-7 rounded-[20px] sm:rounded-[24px] bg-black/50 border border-white/40 outline-none transition-all resize-none font-sans text-base sm:text-lg text-white/90 placeholder-white/40 focus:border-cherry-blossom/20 focus:ring-1 focus:ring-cherry-blossom/5 custom-scrollbar leading-relaxed'
                   placeholder='Write your fantacy or story here in 3-4 lines...'
                   value={input}
                   onChange={e => setInput(e.target.value)}
@@ -260,12 +256,14 @@ export default function StartScreen({ onStart }: { onStart: () => void }) {
                 <div className='absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-700'></div>
               </motion.button>
 
-              <button
+              <motion.button
+                whileHover={{ scale: 1.02, backgroundColor: 'rgba(255, 255, 255, 0.05)' }}
+                whileTap={{ scale: 0.98 }}
                 onClick={() => setIsHistoryOpen(true)}
-                className="w-full py-2 text-[9px] uppercase tracking-[0.6em] text-white/40 hover:text-cherry-blossom transition-all font-black mt-4"
+                className="w-full py-3 rounded-xl bg-white/5 border border-white/10 text-[10px] uppercase tracking-[0.4em] text-white/50 hover:text-cherry-blossom transition-all font-black mt-2"
               >
-                View Story Archive
-              </button>
+                HISTORY
+              </motion.button>
             </div>
           </div>
         </motion.div>

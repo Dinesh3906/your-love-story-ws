@@ -33,6 +33,15 @@
     .pb-safe {
         padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
     }
+
+    .px-safe {
+        padding-left: max(1rem, env(safe-area-inset-left));
+        padding-right: max(1rem, env(safe-area-inset-right));
+    }
+
+    .mt-safe {
+        margin-top: max(0.75rem, env(safe-area-inset-top));
+    }
 }
 
 /* 3D Container */
