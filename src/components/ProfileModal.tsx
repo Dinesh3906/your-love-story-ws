@@ -85,7 +85,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) => {
                                             <label className="text-[8px] uppercase tracking-[0.3em] text-cherry-blossom block font-black">Likes (Comma separated)</label>
                                             <input
                                                 value={likes.join(', ')}
-                                                onChange={(e) => setLikes(e.target.value.split(',').map(s => s.trim()).filter(Boolean))}
+                                                onChange={(e) => setLikes(e.target.value.split(',').map(s => s.trim()).filter(s => s.length > 0))}
                                                 placeholder="Rain, Coffee, Cats"
                                                 className="w-full bg-black/40 border border-white/10 rounded-xl p-3 text-white text-xs focus:border-cherry-blossom/40 outline-none"
                                             />
@@ -94,7 +94,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) => {
                                             <label className="text-[8px] uppercase tracking-[0.3em] text-soft-lavender block font-black">Dislikes (Comma separated)</label>
                                             <input
                                                 value={dislikes.join(', ')}
-                                                onChange={(e) => setDislikes(e.target.value.split(',').map(s => s.trim()).filter(Boolean))}
+                                                onChange={(e) => setDislikes(e.target.value.split(',').map(s => s.trim()).filter(s => s.length > 0))}
                                                 placeholder="Crowds, Noise, Heat"
                                                 className="w-full bg-black/40 border border-white/10 rounded-xl p-3 text-white text-xs focus:border-soft-lavender/40 outline-none"
                                             />

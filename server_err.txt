@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "D:\your love story\server.py", line 26, in <module>
+    client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
+  File "C:\Users\chala\AppData\Roaming\Python\Python314\site-packages\groq\_client.py", line 79, in __init__
+    raise GroqError(
+        "The api_key client option must be set either by passing api_key to the client or by setting the GROQ_API_KEY environment variable"
+    )
+groq.GroqError: The api_key client option must be set either by passing api_key to the client or by setting the GROQ_API_KEY environment variable

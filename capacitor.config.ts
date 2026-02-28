@@ -1,17 +1,13 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'com.dinesh.yourlovestory',
+  appId: 'com.dinesh.yourlovestory.v2',
   appName: 'Your Love Story',
   webDir: 'dist',
   plugins: {
     AdMob: {
-      androidAppId: 'ca-app-pub-5173875521561209~9130663095',
+      androidAppId: 'ca-app-pub-5173875521561209~1055412706',
     },
-  },
-  server: {
-    url: 'http://172.50.3.240:3000',
-    cleartext: true,
   },
 };
 

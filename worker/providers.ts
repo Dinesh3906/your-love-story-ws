@@ -161,12 +161,12 @@ THEN: Present 2-4 NEW options (Max 10 words each).
 
     if (request.user_preferences) {
         const { likes, dislikes, description } = request.user_preferences;
-        if (likes.length > 0 || dislikes.length > 0 || description) {
-            user_input_section += `\n\n[USER PERSONALITY & SOUL PREFERENCES]`;
-            if (likes.length > 0) user_input_section += `\nLIKES: ${likes.join(', ')}`;
-            if (dislikes.length > 0) user_input_section += `\nDISLIKES: ${dislikes.join(', ')}`;
+        if ((likes && likes.length > 0) || (dislikes && dislikes.length > 0) || description) {
+            user_input_section += `\n\n[CRITICAL: USER SOUL PREFERENCES]`;
+            if (likes && likes.length > 0) user_input_section += `\nLIKES: ${likes.join(', ')}`;
+            if (dislikes && dislikes.length > 0) user_input_section += `\nDISLIKES: ${dislikes.join(', ')}`;
             if (description) user_input_section += `\nBIO: ${description}`;
-            user_input_section += `\nIMPORTANT: Use these traits to weave a story that feels personal. Characters should notice what the player likes/hates.`;
+            user_input_section += `\nIMPORTANT INSTRUCTION: The NPC MUST explicitly remember and react to the user's LIKES and DISLIKES if the current topic or environment relates to them. For example, if the user dislikes cats and a topic comes up about cats, the NPC should actively remember and acknowledge the user's dislike (e.g., "I know you hate cats, so let's keep walking"). If the user likes coffee and you are at a cafe, the NPC should order it for them, explicitly mentioning they remembered.`;
         }
     }
 

@@ -1,0 +1,112 @@
+
+ ⛅️ wrangler 4.69.0
+───────────────────
+
+Cloudflare collects anonymous telemetry about your usage of Wrangler. Learn more at https://github.com/cloudflare/workers-sdk/tree/main/packages/wrangler/telemetry.md
+Using vars defined in .dev.vars
+Your Worker has access to the following bindings:
+Binding                                                                Resource                  Mode
+env.VITE_API_URL ("https://your-love-story-ai-backend.yo...")          Environment Variable      local
+env.GROQ_API_KEY_1 ("(hidden)")                                        Environment Variable      local
+env.GROQ_API_KEY_2 ("(hidden)")                                        Environment Variable      local
+env.GROQ_API_KEY_3 ("(hidden)")                                        Environment Variable      local
+env.GROQ_API_KEY_4 ("(hidden)")                                        Environment Variable      local
+env.GROQ_API_KEY_5 ("(hidden)")                                        Environment Variable      local
+env.GROQ_API_KEY_6 ("(hidden)")                                        Environment Variable      local
+env.GROQ_API_KEY_7 ("(hidden)")                                        Environment Variable      local
+env.GROQ_API_KEY_8 ("(hidden)")                                        Environment Variable      local
+env.GROQ_API_KEY_9 ("(hidden)")                                        Environment Variable      local
+env.GROQ_API_KEY_10 ("(hidden)")                                       Environment Variable      local
+env.GROQ_API_KEY_11 ("(hidden)")                                       Environment Variable      local
+env.GROQ_API_KEY_12 ("(hidden)")                                       Environment Variable      local
+env.GROQ_API_KEY_13 ("(hidden)")                                       Environment Variable      local
+env.GROQ_API_KEY_14 ("(hidden)")                                       Environment Variable      local
+env.GROQ_API_KEY_15 ("(hidden)")                                       Environment Variable      local
+env.GROQ_API_KEY_16 ("(hidden)")                                       Environment Variable      local
+env.GROQ_API_KEY_17 ("(hidden)")                                       Environment Variable      local
+env.GROQ_API_KEY_18 ("(hidden)")                                       Environment Variable      local
+env.GROQ_API_KEY_19 ("(hidden)")                                       Environment Variable      local
+env.GROQ_API_KEY_20 ("(hidden)")                                       Environment Variable      local
+env.GROQ_API_KEY_21 ("(hidden)")                                       Environment Variable      local
+env.GROQ_API_KEY_22 ("(hidden)")                                       Environment Variable      local
+env.GROQ_API_KEY_23 ("(hidden)")                                       Environment Variable      local
+env.GROQ_API_KEY_24 ("(hidden)")                                       Environment Variable      local
+env.GROQ_API_KEY_25 ("(hidden)")                                       Environment Variable      local
+env.GROQ_API_KEY_26 ("(hidden)")                                       Environment Variable      local
+env.GROQ_API_KEY_27 ("(hidden)")                                       Environment Variable      local
+env.GROQ_API_KEY_28 ("(hidden)")                                       Environment Variable      local
+env.GROQ_API_KEY_29 ("(hidden)")                                       Environment Variable      local
+env.GROQ_API_KEY_30 ("(hidden)")                                       Environment Variable      local
+env.GROQ_API_KEY_31 ("(hidden)")                                       Environment Variable      local
+env.GROQ_API_KEY_32 ("(hidden)")                                       Environment Variable      local
+env.GROQ_API_KEY_33 ("(hidden)")                                       Environment Variable      local
+env.GROQ_API_KEY_34 ("(hidden)")                                       Environment Variable      local
+env.GROQ_API_KEY_35 ("(hidden)")                                       Environment Variable      local
+env.GROQ_API_KEY_36 ("(hidden)")                                       Environment Variable      local
+env.GROQ_API_KEY_37 ("(hidden)")                                       Environment Variable      local
+env.GROQ_API_KEY_38 ("(hidden)")                                       Environment Variable      local
+env.GROQ_API_KEY_39 ("(hidden)")                                       Environment Variable      local
+env.GROQ_API_KEY_40 ("(hidden)")                                       Environment Variable      local
+env.GROQ_API_KEY_41 ("(hidden)")                                       Environment Variable      local
+env.GROQ_API_KEY_42 ("(hidden)")                                       Environment Variable      local
+env.GROQ_API_KEY_43 ("(hidden)")                                       Environment Variable      local
+env.GROQ_API_KEY_44 ("(hidden)")                                       Environment Variable      local
+env.GROQ_API_KEY_45 ("(hidden)")                                       Environment Variable      local
+env.GROQ_API_KEY_46 ("(hidden)")                                       Environment Variable      local
+env.GROQ_API_KEY_47 ("(hidden)")                                       Environment Variable      local
+env.GROQ_API_KEY_48 ("(hidden)")                                       Environment Variable      local
+env.GROQ_API_KEY_49 ("(hidden)")                                       Environment Variable      local
+env.GROQ_API_KEY_50 ("(hidden)")                                       Environment Variable      local
+env.GROQ_API_KEY_51 ("(hidden)")                                       Environment Variable      local
+env.GROQ_API_KEY_52 ("(hidden)")                                       Environment Variable      local
+env.GROQ_API_KEY_53 ("(hidden)")                                       Environment Variable      local
+env.GROQ_API_KEY_54 ("(hidden)")                                       Environment Variable      local
+env.GROQ_API_KEY_55 ("(hidden)")                                       Environment Variable      local
+env.GROQ_API_KEY_56 ("(hidden)")                                       Environment Variable      local
+env.GROQ_API_KEY_57 ("(hidden)")                                       Environment Variable      local
+env.GROQ_API_KEY_58 ("(hidden)")                                       Environment Variable      local
+env.GROQ_API_KEY_59 ("(hidden)")                                       Environment Variable      local
+env.GROQ_API_KEY_60 ("(hidden)")                                       Environment Variable      local
+env.GROQ_API_KEY_61 ("(hidden)")                                       Environment Variable      local
+env.GROQ_API_KEY_62 ("(hidden)")                                       Environment Variable      local
+env.GROQ_API_KEY_63 ("(hidden)")                                       Environment Variable      local
+env.GROQ_API_KEY_64 ("(hidden)")                                       Environment Variable      local
+env.GROQ_API_KEY_65 ("(hidden)")                                       Environment Variable      local
+env.GROQ_API_KEY_66 ("(hidden)")                                       Environment Variable      local
+env.GROQ_API_KEY_67 ("(hidden)")                                       Environment Variable      local
+env.GROQ_API_KEY_68 ("(hidden)")                                       Environment Variable      local
+env.GROQ_API_KEY_69 ("(hidden)")                                       Environment Variable      local
+env.GROQ_API_KEY_70 ("(hidden)")                                       Environment Variable      local
+env.GROQ_API_KEY_71 ("(hidden)")                                       Environment Variable      local
+env.GROQ_API_KEY_72 ("(hidden)")                                       Environment Variable      local
+env.GROQ_API_KEY_73 ("(hidden)")                                       Environment Variable      local
+env.GROQ_API_KEY_74 ("(hidden)")                                       Environment Variable      local
+env.GROQ_API_KEY_75 ("(hidden)")                                       Environment Variable      local
+env.GROQ_API_KEY_76 ("(hidden)")                                       Environment Variable      local
+env.GROQ_API_KEY_77 ("(hidden)")                                       Environment Variable      local
+env.GROQ_API_KEY_78 ("(hidden)")                                       Environment Variable      local
+env.GROQ_API_KEY_79 ("(hidden)")                                       Environment Variable      local
+env.GROQ_API_KEY_80 ("(hidden)")                                       Environment Variable      local
+env.GROQ_API_KEY_81 ("(hidden)")                                       Environment Variable      local
+env.GROQ_API_KEY_82 ("(hidden)")                                       Environment Variable      local
+env.GROQ_API_KEY_83 ("(hidden)")                                       Environment Variable      local
+env.GROQ_API_KEY_84 ("(hidden)")                                       Environment Variable      local
+env.GROQ_API_KEY_85 ("(hidden)")                                       Environment Variable      local
+env.GROQ_API_KEY_86 ("(hidden)")                                       Environment Variable      local
+env.GROQ_API_KEY_87 ("(hidden)")                                       Environment Variable      local
+env.GROQ_API_KEY_88 ("(hidden)")                                       Environment Variable      local
+env.GROQ_API_KEY_89 ("(hidden)")                                       Environment Variable      local
+env.GROQ_API_KEY_90 ("(hidden)")                                       Environment Variable      local
+env.GROQ_API_KEY_91 ("(hidden)")                                       Environment Variable      local
+env.GROQ_API_KEY_92 ("(hidden)")                                       Environment Variable      local
+env.GROQ_API_KEY_93 ("(hidden)")                                       Environment Variable      local
+env.GROQ_API_KEY_94 ("(hidden)")                                       Environment Variable      local
+env.GROQ_API_KEY_95 ("(hidden)")                                       Environment Variable      local
+env.GROQ_API_KEY_96 ("(hidden)")                                       Environment Variable      local
+env.GROQ_API_KEY_97 ("(hidden)")                                       Environment Variable      local
+env.GROQ_API_KEY_98 ("(hidden)")                                       Environment Variable      local
+env.GROQ_API_KEY_99 ("(hidden)")                                       Environment Variable      local
+env.GROQ_API_KEY_100 ("(hidden)")                                      Environment Variable      local
+
+⎔ Starting local server...
+[wrangler:info] Ready on http://127.0.0.1:8787

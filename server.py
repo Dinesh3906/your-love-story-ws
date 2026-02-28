@@ -121,8 +121,19 @@ REMINDER: Options must be EXTREMELY SHORT (max 10 words).
         user_input_section += f"\nREMINDER: The player is {request.user_gender}. Story Length: {request.story_length}. Indicators: {json.dumps(request.indicators)}. Maintain this perspective and follow the structural rules."
         
         if request.user_preferences:
+            likes = request.user_preferences.get('likes', [])
+            dislikes = request.user_preferences.get('dislikes', [])
             pref_desc = request.user_preferences.get('description', '')
-            user_input_section += f"\n\n[USER PERSONALITY & PREFERENCES]\n{pref_desc}\nIMPORTANT: Involve these likes and dislikes naturally in the story. If they like specific food, places, or personality traits, reflect that in the NPC's behavior or the environment."
+            
+            if likes or dislikes or pref_desc:
+                user_input_section += "\n\n[CRITICAL: USER SOUL PREFERENCES]"
+                if likes:
+                    user_input_section += f"\nLIKES: {', '.join(likes)}"
+                if dislikes:
+                    user_input_section += f"\nDISLIKES: {', '.join(dislikes)}"
+                if pref_desc:
+                    user_input_section += f"\nBIO: {pref_desc}"
+                user_input_section += "\nIMPORTANT INSTRUCTION: The NPC MUST explicitly remember and react to the user's LIKES and DISLIKES if the current topic or environment relates to them. For example, if the user dislikes cats and a topic comes up about cats, the NPC should actively remember and acknowledge the user's dislike (e.g., \"I know you hate cats, so let's keep walking\"). If the user likes coffee and you are at a cafe, the NPC should order it for them, explicitly mentioning they remembered."
 
         chat_completion = client.chat.completions.create(
             messages=[

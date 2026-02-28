@@ -1,4 +1,4 @@
-package com.dinesh.yourlovestory;
+package com.dinesh.yourlovestory.v2;
 
 import com.getcapacitor.BridgeActivity;
 

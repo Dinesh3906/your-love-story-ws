@@ -15,7 +15,7 @@ export const AdRewardModal = ({ isOpen, onClose }: AdRewardModalProps) => {
     const [pendingReward, setPendingReward] = useState<'trust' | 'relationship' | 'vulnerable' | null>(null);
 
     // AdMob Configuration from User
-    const ADMOB_AD_UNIT_ID = "ca-app-pub-5173875521561209/3146050116";
+    const ADMOB_AD_UNIT_ID = "ca-app-pub-5173875521561209/8306741409";
 
     useEffect(() => {
         if (Capacitor.isNativePlatform()) {
@@ -49,11 +49,8 @@ export const AdRewardModal = ({ isOpen, onClose }: AdRewardModalProps) => {
             try {
                 await AdMob.prepareRewardVideoAd(options);
             } catch (error) {
-                console.warn('Live Ad failed, falling back to Test ID...', error);
-                // TEST ID for Rewarded Ads: ca-app-pub-3940256099942544/5224354917
-                await AdMob.prepareRewardVideoAd({
-                    adId: 'ca-app-pub-3940256099942544/5224354917'
-                });
+                console.warn('Live Ad failed to prepare:', error);
+                throw error; // Let the outer catch handle it
             }
 
             const reward = await AdMob.showRewardVideoAd();
